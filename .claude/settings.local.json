@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(claude mcp add:*)",
+      "WebSearch",
+      "Bash(curl:*)",
+      "Bash(sh)",
+      "Bash(source $HOME/.local/bin/env)",
+      "Bash(claude mcp list:*)",
+      "mcp__blender-mcp__get_scene_info",
+      "mcp__blender-mcp__execute_blender_code",
+      "mcp__blender-mcp__get_viewport_screenshot",
+      "mcp__blender-mcp__get_object_info",
+      "Bash(pip install:*)",
+      "Bash(gcloud auth list:*)",
+      "Bash(printenv:*)",
+      "Bash(python3:*)",
+      "Bash(pip3 list:*)"
+    ]
+  }
+}

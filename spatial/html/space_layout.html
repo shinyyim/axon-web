@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE.X Flagship — Spatial Layout</title>
+    <style>
+        /* ============================================
+           DUNE.X Color System
+           ============================================ */
+        :root {
+            --dx-void: #0A0A0C;
+            --dx-bone: #E8E0D4;
+            --dx-signal: #E94520;
+            --dx-haze: #2A2A30;
+            --dx-dust: #8B7D6B;
+            --dx-membrane: #1E1E24;
+            --dx-atmosphere: #F5F0E8;
+            --dx-regolith: #C4A882;
+            --dx-portal-white: #FFFFFF;
+            --dx-cold-glow: #D0D8E8;
+        }
+
+        /* ============================================
+           Reset & Base
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'Monument Extended';
+            src: local('Monument Extended');
+        }
+
+        body {
+            background: var(--dx-void);
+            color: var(--dx-bone);
+            font-family: 'Söhne Mono', 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================
+           Layout
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+
+        /* ============================================
+           Header
+           ============================================ */
+        .header {
+            margin-bottom: 64px;
+        }
+
+        .brand-name {
+            font-family: 'Monument Extended', 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--dx-bone);
+            margin-bottom: 8px;
+        }
+
+        .page-title {
+            font-family: 'Monument Extended', 'Inter', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--dx-bone);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            color: var(--dx-dust);
+            font-size: 12px;
+            letter-spacing: 1px;
+            max-width: 480px;
+        }
+
+        /* ============================================
+           Building Section + Intensity Bar
+           ============================================ */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 48px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           Floor Navigation (Building Section)
+           ============================================ */
+        .building-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .building-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dx-dust);
+            margin-bottom: 16px;
+        }
+
+        .floor-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            position: relative;
+        }
+
+        .floor-btn {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: var(--dx-membrane);
+            border: 1px solid rgba(232, 224, 212, 0.04);
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .floor-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: transparent;
+            transition: background 0.4s;
+        }
+
+        .floor-btn:hover {
+            background: var(--dx-haze);
+            border-color: rgba(232, 224, 212, 0.08);
+        }
+
+        .floor-btn:hover::before {
+            background: var(--dx-dust);
+        }
+
+        .floor-btn.active {
+            background: var(--dx-haze);
+            border-color: rgba(232, 224, 212, 0.12);
+        }
+
+        .floor-btn.active::before {
+            background: var(--dx-bone);
+        }
+
+        .floor-btn.active .floor-id {
+            color: var(--dx-bone);
+        }
+
+        .floor-id {
+            font-family: 'Monument Extended', 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--dx-dust);
+            transition: color 0.4s;
+        }
+
+        .floor-name {
+            font-size: 12px;
+            color: var(--dx-bone);
+            letter-spacing: 0.5px;
+        }
+
+        .floor-area {
+            font-size: 10px;
+            color: var(--dx-dust);
+            letter-spacing: 1px;
+        }
+
+        /* Elevator skip indicator */
+        .elevator-skip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 20px;
+            margin: 2px 0;
+        }
+
+        .skip-line {
+            width: 48px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .skip-line-inner {
+            width: 1px;
+            height: 28px;
+            background: repeating-linear-gradient(
+                to bottom,
+                var(--dx-signal) 0px,
+                var(--dx-signal) 3px,
+                transparent 3px,
+                transparent 6px
+            );
+        }
+
+        .skip-text {
+            font-size: 10px;
+            color: var(--dx-signal);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================
+           Floor Detail Panel
+           ============================================ */
+        .detail-panel {
+            position: sticky;
+            top: 48px;
+        }
+
+        .detail-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(232, 224, 212, 0.08);
+        }
+
+        .detail-floor-id {
+            font-family: 'Monument Extended', 'Inter', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--dx-bone);
+            margin-bottom: 4px;
+        }
+
+        .detail-floor-name {
+            font-size: 14px;
+            color: var(--dx-dust);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .detail-floor-elevation {
+            font-size: 10px;
+            color: var(--dx-dust);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Floor Plan SVG Area */
+        .plan-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: var(--dx-membrane);
+            border: 1px solid rgba(232, 224, 212, 0.06);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Zone labels in SVG */
+        .zone-label {
+            font-family: 'Söhne Mono', 'JetBrains Mono', monospace;
+            font-size: 8px;
+            fill: var(--dx-bone);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .zone-label-small {
+            font-family: 'Söhne Mono', 'JetBrains Mono', monospace;
+            font-size: 6.5px;
+            fill: var(--dx-dust);
+            letter-spacing: 0.5px;
+        }
+
+        .zone-area-text {
+            font-family: 'Söhne Mono', 'JetBrains Mono', monospace;
+            font-size: 6px;
+            fill: var(--dx-dust);
+            letter-spacing: 0.5px;
+        }
+
+        /* Zone list */
+        .zone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .zone-item {
+            display: grid;
+            grid-template-columns: 8px 1fr auto;
+            align-items: start;
+            gap: 10px;
+            font-size: 11px;
+        }
+
+        .zone-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 4px;
+        }
+
+        .zone-item-name {
+            color: var(--dx-bone);
+        }
+
+        .zone-item-area {
+            color: var(--dx-dust);
+            font-size: 10px;
+        }
+
+        /* Spatial notes */
+        .spatial-notes {
+            padding-top: 16px;
+            border-top: 1px solid rgba(232, 224, 212, 0.06);
+        }
+
+        .spatial-notes-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dx-dust);
+            margin-bottom: 8px;
+        }
+
+        .spatial-note {
+            font-size: 11px;
+            color: var(--dx-dust);
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+
+        .spatial-note em {
+            color: var(--dx-bone);
+            font-style: normal;
+        }
+
+        /* ============================================
+           Intensity Gradient Bar
+           ============================================ */
+        .intensity-section {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(232, 224, 212, 0.06);
+        }
+
+        .intensity-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dx-dust);
+            margin-bottom: 16px;
+        }
+
+        .intensity-bar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            height: 32px;
+            margin-bottom: 8px;
+        }
+
+        .intensity-segment {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--dx-void);
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        .intensity-segment.level-1 { background: rgba(232, 224, 212, 0.08); color: var(--dx-dust); }
+        .intensity-segment.level-2 { background: rgba(232, 224, 212, 0.15); color: var(--dx-dust); }
+        .intensity-segment.level-3 { background: rgba(232, 224, 212, 0.22); color: var(--dx-dust); }
+        .intensity-segment.level-4 { background: rgba(232, 224, 212, 0.06); color: rgba(232,224,212,0.3); }
+        .intensity-segment.level-5 { background: rgba(232, 224, 212, 0.55); color: var(--dx-void); }
+        .intensity-segment.level-6 { background: rgba(232, 224, 212, 0.45); color: var(--dx-void); }
+        .intensity-segment.level-event { background: rgba(233, 69, 32, 0.2); color: var(--dx-signal); }
+
+        .intensity-labels {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .intensity-floor-label {
+            font-size: 9px;
+            color: var(--dx-dust);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           Journey Flow
+           ============================================ */
+        .journey-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(232, 224, 212, 0.06);
+        }
+
+        .journey-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dx-dust);
+            margin-bottom: 16px;
+        }
+
+        .journey-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .journey-node {
+            padding: 4px 10px;
+            background: var(--dx-membrane);
+            border: 1px solid rgba(232, 224, 212, 0.08);
+            color: var(--dx-bone);
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .journey-node:hover {
+            border-color: rgba(232, 224, 212, 0.2);
+        }
+
+        .journey-node.active {
+            border-color: var(--dx-bone);
+        }
+
+        .journey-node.skip {
+            border-color: rgba(233, 69, 32, 0.3);
+            color: var(--dx-signal);
+            border-style: dashed;
+        }
+
+        .journey-arrow {
+            color: var(--dx-dust);
+            font-size: 10px;
+        }
+
+        .journey-arrow.down {
+            color: var(--dx-signal);
+        }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(232, 224, 212, 0.04);
+            font-size: 10px;
+            color: rgba(232, 224, 212, 0.25);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="brand-name">DUNE.X</div>
+        <div class="page-title">FLAGSHIP SPATIAL LAYOUT</div>
+        <div class="page-subtitle">Vertical airlock. Seven levels. 30m from street to departure. Select a floor to view the zone layout, circulation, and spatial notes.</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Left: Floor Stack Navigation -->
+        <div class="building-section">
+            <div class="building-label">Building Section</div>
+            <div class="floor-stack">
+                <div class="floor-btn active" data-floor="6F" onclick="selectFloor('6F')">
+                    <span class="floor-id">6F</span>
+                    <span class="floor-name">Manufacturing</span>
+                    <span class="floor-area">370 sqft / +25.0m</span>
+                </div>
+                <div class="floor-btn" data-floor="5F" onclick="selectFloor('5F')">
+                    <span class="floor-id">5F</span>
+                    <span class="floor-name">The Reveal</span>
+                    <span class="floor-area">370 sqft / +20.0m</span>
+                </div>
+                <div class="elevator-skip">
+                    <div class="skip-line"><div class="skip-line-inner"></div></div>
+                    <span class="skip-text">Elevator skips 4F on ascent</span>
+                </div>
+                <div class="floor-btn" data-floor="4F" onclick="selectFloor('4F')">
+                    <span class="floor-id">4F</span>
+                    <span class="floor-name">Checkout</span>
+                    <span class="floor-area">370 sqft / +15.0m</span>
+                </div>
+                <div class="floor-btn" data-floor="3F" onclick="selectFloor('3F')">
+                    <span class="floor-id">3F</span>
+                    <span class="floor-name">Cafe & Gathering</span>
+                    <span class="floor-area">370 sqft / +10.0m</span>
+                </div>
+                <div class="floor-btn" data-floor="2F" onclick="selectFloor('2F')">
+                    <span class="floor-id">2F</span>
+                    <span class="floor-name">Experience Zone</span>
+                    <span class="floor-area">370 sqft / +5.0m</span>
+                </div>
+                <div class="floor-btn" data-floor="1F" onclick="selectFloor('1F')">
+                    <span class="floor-id">1F</span>
+                    <span class="floor-name">Arrival</span>
+                    <span class="floor-area">370 sqft / 0.0m</span>
+                </div>
+                <div class="floor-btn" data-floor="B1" onclick="selectFloor('B1')">
+                    <span class="floor-id">B1</span>
+                    <span class="floor-name">Event Floor</span>
+                    <span class="floor-area">370 sqft / -5.0m</span>
+                </div>
+            </div>
+
+            <!-- Intensity Gradient -->
+            <div class="intensity-section">
+                <div class="intensity-label">Conceptual Intensity</div>
+                <div class="intensity-bar">
+                    <div class="intensity-segment level-event" data-floor="B1">VAR</div>
+                    <div class="intensity-segment level-2" data-floor="1F"></div>
+                    <div class="intensity-segment level-3" data-floor="2F"></div>
+                    <div class="intensity-segment level-2" data-floor="3F"></div>
+                    <div class="intensity-segment level-4" data-floor="4F"></div>
+                    <div class="intensity-segment level-5" data-floor="5F"></div>
+                    <div class="intensity-segment level-6" data-floor="6F"></div>
+                </div>
+                <div class="intensity-labels">
+                    <div class="intensity-floor-label">B1</div>
+                    <div class="intensity-floor-label">1F</div>
+                    <div class="intensity-floor-label">2F</div>
+                    <div class="intensity-floor-label">3F</div>
+                    <div class="intensity-floor-label">4F</div>
+                    <div class="intensity-floor-label">5F</div>
+                    <div class="intensity-floor-label">6F</div>
+                </div>
+            </div>
+
+            <!-- Journey Flow -->
+            <div class="journey-section">
+                <div class="journey-label">Customer Journey</div>
+                <div class="journey-flow">
+                    <span class="journey-node" data-floor="1F" onclick="selectFloor('1F')">1F Entry</span>
+                    <span class="journey-arrow">&rarr;</span>
+                    <span class="journey-node" data-floor="2F" onclick="selectFloor('2F')">2F Experience</span>
+                    <span class="journey-arrow">&rarr;</span>
+                    <span class="journey-node" data-floor="3F" onclick="selectFloor('3F')">3F Cafe</span>
+                    <span class="journey-arrow down">&darr; elevator</span>
+                    <span class="journey-node skip" data-floor="4F" onclick="selectFloor('4F')">4F skip</span>
+                    <span class="journey-arrow down">&darr;</span>
+                    <span class="journey-node" data-floor="5F" onclick="selectFloor('5F')">5F Reveal</span>
+                    <span class="journey-arrow">&rarr;</span>
+                    <span class="journey-node" data-floor="6F" onclick="selectFloor('6F')">6F Fabrication</span>
+                    <span class="journey-arrow down">&darr; descend</span>
+                    <span class="journey-node" data-floor="4F" onclick="selectFloor('4F')">4F Checkout</span>
+                    <span class="journey-arrow">&rarr;</span>
+                    <span class="journey-node" data-floor="1F" onclick="selectFloor('1F')">1F Exit</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Detail Panel -->
+        <div class="detail-panel" id="detailPanel">
+            <!-- Populated by JS -->
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        DUNE.X FLAGSHIP &mdash; SPATIAL LAYOUT &mdash; PHASE 1 DELIVERABLE &mdash; ALL DIMENSIONS IN SQFT
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// Floor Data
+// ============================================
+const floors = {
+    'B1': {
+        id: 'B1',
+        name: 'Event Floor',
+        elevation: '-5.0m to 0.0m',
+        zones: [
+            { name: 'Event Arena', area: '250 sqft', color: '#E94520' },
+            { name: 'Backstage / Storage', area: '50 sqft', color: '#8B7D6B' },
+            { name: 'Service Access', area: '25 sqft', color: '#C4A882' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Raw volume.</em> Board-formed concrete. Exposed ceiling structure at 4.5m.',
+            'Configurable for 40-60 standing, 25-30 seated.',
+            'Floor-embedded 1.2m x 1.2m power/data grid.',
+            'Independent from retail journey. Separate stair access.'
+        ],
+        svg: generateB1
+    },
+    '1F': {
+        id: '1F',
+        name: 'Arrival',
+        elevation: '0.0m to +5.0m',
+        zones: [
+            { name: 'Airlock Entry Corridor', area: '120 sqft', color: '#E8E0D4' },
+            { name: 'Reception / Brand Chamber', area: '115 sqft', color: '#D0D8E8' },
+            { name: 'Escalator Landing', area: '50 sqft', color: '#8B7D6B' },
+            { name: 'Street Entrance', area: '40 sqft', color: '#C4A882' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The threshold.</em> Compressed corridor: 1.4m wide, 2.4m ceiling.',
+            'No product displayed. Atmosphere only.',
+            'Corridor bends 15 degrees midway. Street disappears.',
+            'DUNE.X wordmark backlit on reception wall. Single sealed specimen below.'
+        ],
+        svg: generate1F
+    },
+    '2F': {
+        id: '2F',
+        name: 'Experience Zone',
+        elevation: '+5.0m to +10.0m',
+        zones: [
+            { name: 'Biodata Scanning Station', area: '100 sqft', color: '#D0D8E8' },
+            { name: 'AI Visualization Wall', area: '80 sqft', color: '#E94520' },
+            { name: 'Interactive Installation', area: '100 sqft', color: '#E8E0D4' },
+            { name: 'Transition Corridor', area: '45 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The body becomes data.</em> Biodata scan is optional.',
+            'Scanning ring: 1.5m diameter, 12 depth cameras, 45-second capture.',
+            'AI wall: 4.0m x 2.5m rear-projection. Real-time generative visualization.',
+            'Central cylinder: Terrain Boot 01 suspended in holographic data orbit.'
+        ],
+        svg: generate2F
+    },
+    '3F': {
+        id: '3F',
+        name: 'Cafe & Gathering',
+        elevation: '+10.0m to +15.0m',
+        zones: [
+            { name: 'Lounge Seating', area: '140 sqft', color: '#C4A882' },
+            { name: 'Cafe Counter + Prep', area: '80 sqft', color: '#8B7D6B' },
+            { name: 'Elevator Lobby', area: '60 sqft', color: '#E94520' },
+            { name: 'Restroom', area: '45 sqft', color: '#2A2A30' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Last human floor.</em> The warmest space in the building.',
+            'Suspended 2.0m light ring at 3000K above seating.',
+            'Elevator lobby: horizontal light line at waist height. Text above: THRESHOLD.',
+            'Three-item menu. Matte black ceramic cups. D.X debossed.'
+        ],
+        svg: generate3F
+    },
+    '4F': {
+        id: '4F',
+        name: 'Checkout',
+        elevation: '+15.0m to +20.0m',
+        zones: [
+            { name: 'Checkout Counter', area: '80 sqft', color: '#8B7D6B' },
+            { name: 'Packaging Station', area: '70 sqft', color: '#C4A882' },
+            { name: 'Pickup Waiting', area: '80 sqft', color: '#2A2A30' },
+            { name: 'Escalator to 1F', area: '50 sqft', color: '#E8E0D4' },
+            { name: 'Staff Support', area: '45 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Functional. Efficient. Deliberate restraint.</em>',
+            'Skipped on ascent. Visited only during descent.',
+            'Material shift: painted gypsum replaces mineral plaster.',
+            'Biodata certificate sealed into packaging. 3-4 minute ritual.'
+        ],
+        svg: generate4F
+    },
+    '5F': {
+        id: '5F',
+        name: 'The Reveal',
+        elevation: '+20.0m to +25.0m',
+        zones: [
+            { name: 'Planetary Environment', area: '200 sqft', color: '#D0D8E8' },
+            { name: 'Product Display Vitrines', area: '80 sqft', color: '#E94520' },
+            { name: 'Elevator Arrival Zone', area: '45 sqft', color: '#E8E0D4' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The emotional peak.</em> Elevator doors open to another world.',
+            '3.0m suspended portal ring. 5500K cold white. Full intensity.',
+            'Floor: 50mm crushed basalt. 270-degree surround projection.',
+            '4-5 hero pieces under glass domes. Terrain Boot 01 at center.',
+            'Temperature drops 2-3 degrees. Humidity: 35%.'
+        ],
+        svg: generate5F
+    },
+    '6F': {
+        id: '6F',
+        name: 'Manufacturing',
+        elevation: '+25.0m to +30.0m',
+        zones: [
+            { name: 'Robotic Fabrication Theater', area: '150 sqft', color: '#E8E0D4' },
+            { name: 'Viewing Gallery', area: '75 sqft', color: '#D0D8E8' },
+            { name: 'Handoff Counter', area: '60 sqft', color: '#C4A882' },
+            { name: 'Back of House', area: '40 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The forge.</em> Real robotic fabrication. Not theatrical.',
+            'Glass partition: 12mm laminated, anti-reflective, angled 3 degrees.',
+            'KUKA 6-axis arm. Terrain Boot 01 cycle: ~22 minutes.',
+            'LED telemetry ticker: real-time fabrication data along gallery rail.',
+            'Handoff: product emerges through pneumatic pass-through hatch.'
+        ],
+        svg: generate6F
+    }
+};
+
+// ============================================
+// SVG Floor Plan Generators
+// ============================================
+// All plans use a 340x340 viewbox with consistent core position
+
+function svgOpen() {
+    return `<svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+        <rect width="340" height="340" fill="#1E1E24" rx="0"/>
+        <!-- Grid -->
+        <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(232,224,212,0.03)" stroke-width="0.5"/>
+            </pattern>
+        </defs>
+        <rect width="340" height="340" fill="url(#grid)"/>
+        <!-- Building outline -->
+        <rect x="30" y="30" width="280" height="280" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="1"/>`;
+}
+
+function svgCore() {
+    // Vertical core: consistent position on every floor (top-right corner area)
+    return `
+        <!-- Vertical Core -->
+        <rect x="255" y="30" width="55" height="65" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.12)" stroke-width="0.5"/>
+        <text x="282" y="58" text-anchor="middle" class="zone-label-small">CORE</text>
+        <text x="282" y="68" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <!-- Elevator symbol -->
+        <rect x="260" y="35" width="18" height="18" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="260" y1="35" x2="278" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <line x1="278" y1="35" x2="260" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <!-- Stair symbol -->
+        <line x1="285" y1="38" x2="285" y2="52" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="285" y1="38" x2="290" y2="38" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="290" y1="38" x2="290" y2="42" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="290" y1="42" x2="295" y2="42" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="295" y1="42" x2="295" y2="46" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="295" y1="46" x2="300" y2="46" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="300" y1="46" x2="300" y2="52" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>`;
+}
+
+function svgClose() {
+    return `</svg>`;
+}
+
+function generateB1() {
+    return svgOpen() + svgCore() + `
+        <!-- Event Arena -->
+        <rect x="30" y="30" width="222" height="200" fill="rgba(233,69,32,0.06)" stroke="rgba(233,69,32,0.2)" stroke-width="0.5"/>
+        <text x="141" y="120" text-anchor="middle" class="zone-label">EVENT ARENA</text>
+        <text x="141" y="132" text-anchor="middle" class="zone-area-text">250 sqft</text>
+        <!-- Grid dots for power/data -->
+        ${Array.from({length: 5}, (_, i) => Array.from({length: 4}, (_, j) =>
+            `<circle cx="${65 + i * 40}" cy="${60 + j * 40}" r="1.5" fill="rgba(233,69,32,0.25)"/>`
+        ).join('')).join('')}
+        <!-- Backstage -->
+        <rect x="30" y="232" width="130" height="78" fill="rgba(139,125,107,0.08)" stroke="rgba(139,125,107,0.15)" stroke-width="0.5"/>
+        <text x="95" y="268" text-anchor="middle" class="zone-label-small">BACKSTAGE</text>
+        <text x="95" y="280" text-anchor="middle" class="zone-area-text">50 sqft</text>
+        <!-- Service Access -->
+        <rect x="162" y="232" width="90" height="78" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="207" y="268" text-anchor="middle" class="zone-label-small">SERVICE</text>
+        <text x="207" y="280" text-anchor="middle" class="zone-area-text">25 sqft</text>
+        <!-- Service entrance arrow -->
+        <line x1="207" y1="310" x2="207" y2="320" stroke="rgba(196,168,130,0.3)" stroke-width="1" marker-end="url(#arrowDown)"/>
+        <defs><marker id="arrowDown" viewBox="0 0 6 6" refX="3" refY="6" markerWidth="6" markerHeight="6"><path d="M0,0 L3,6 L6,0" fill="rgba(196,168,130,0.3)"/></marker></defs>
+        <text x="207" y="334" text-anchor="middle" class="zone-area-text" style="fill: rgba(196,168,130,0.4)">SERVICE ENTRY</text>
+    ` + svgClose();
+}
+
+function generate1F() {
+    return svgOpen() + svgCore() + `
+        <!-- Street Entrance -->
+        <rect x="30" y="270" width="65" height="40" fill="rgba(196,168,130,0.08)" stroke="rgba(196,168,130,0.2)" stroke-width="0.5"/>
+        <text x="62" y="290" text-anchor="middle" class="zone-label-small">ENTRANCE</text>
+        <text x="62" y="300" text-anchor="middle" class="zone-area-text">40 sqft</text>
+        <!-- Street arrow -->
+        <line x1="62" y1="320" x2="62" y2="330" stroke="rgba(232,224,212,0.2)" stroke-width="1"/>
+        <text x="62" y="340" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.3)">STREET</text>
+        <!-- Airlock Corridor (narrow, bending) -->
+        <rect x="30" y="150" width="35" height="118" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <path d="M 30 150 L 65 150 L 90 130 L 90 100" fill="none" stroke="rgba(232,224,212,0.15)" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="47" y="200" text-anchor="middle" class="zone-label" transform="rotate(-90, 47, 200)">AIRLOCK</text>
+        <!-- Bend indicator -->
+        <text x="75" y="145" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.3)">15 deg</text>
+        <!-- 1.4m width annotation -->
+        <line x1="30" y1="240" x2="65" y2="240" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="47" y="248" text-anchor="middle" class="zone-area-text">1.4m w</text>
+        <!-- Reception / Brand Chamber -->
+        <rect x="67" y="95" width="185" height="135" fill="rgba(208,216,232,0.06)" stroke="rgba(208,216,232,0.12)" stroke-width="0.5"/>
+        <text x="159" y="155" text-anchor="middle" class="zone-label">RECEPTION</text>
+        <text x="159" y="167" text-anchor="middle" class="zone-label-small">BRAND CHAMBER</text>
+        <text x="159" y="179" text-anchor="middle" class="zone-area-text">115 sqft</text>
+        <!-- Wordmark on back wall -->
+        <rect x="100" y="98" width="120" height="3" fill="rgba(232,224,212,0.15)"/>
+        <text x="160" y="112" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.4)">D U N E . X</text>
+        <!-- Specimen vitrine -->
+        <rect x="147" y="128" width="24" height="16" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <circle cx="159" cy="136" r="3" fill="rgba(232,224,212,0.1)" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <!-- Escalator Landing -->
+        <rect x="100" y="232" width="152" height="78" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="176" y="268" text-anchor="middle" class="zone-label-small">ESCALATOR LANDING</text>
+        <text x="176" y="280" text-anchor="middle" class="zone-area-text">50 sqft / from 4F</text>
+        <!-- Escalator symbol -->
+        <line x1="160" y1="242" x2="190" y2="265" stroke="rgba(139,125,107,0.3)" stroke-width="1.5"/>
+        <!-- Circulation arrow: entry to stair -->
+        <path d="M 62 270 L 62 240 L 47 240 L 47 150 L 80 130 L 159 130" fill="none" stroke="rgba(232,224,212,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+    ` + svgClose();
+}
+
+function generate2F() {
+    return svgOpen() + svgCore() + `
+        <!-- AI Visualization Wall -->
+        <rect x="30" y="30" width="222" height="60" fill="rgba(233,69,32,0.06)" stroke="rgba(233,69,32,0.15)" stroke-width="0.5"/>
+        <text x="141" y="58" text-anchor="middle" class="zone-label">AI VISUALIZATION WALL</text>
+        <text x="141" y="70" text-anchor="middle" class="zone-area-text">80 sqft / 4.0m x 2.5m rear-projection</text>
+        <!-- Projection glow effect -->
+        <line x1="35" y1="87" x2="247" y2="87" stroke="rgba(233,69,32,0.08)" stroke-width="3"/>
+        <!-- Interactive Installation (center cylinder) -->
+        <circle cx="150" cy="180" r="40" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <circle cx="150" cy="180" r="25" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <circle cx="150" cy="180" r="5" fill="rgba(232,224,212,0.1)"/>
+        <text x="150" y="195" text-anchor="middle" class="zone-area-text">TERRAIN BOOT 01</text>
+        <text x="150" y="165" text-anchor="middle" class="zone-label-small">INSTALLATION</text>
+        <text x="150" y="230" text-anchor="middle" class="zone-area-text">100 sqft</text>
+        <!-- Orbit rings -->
+        <circle cx="150" cy="180" r="55" fill="none" stroke="rgba(208,216,232,0.06)" stroke-width="0.5" stroke-dasharray="1,3"/>
+        <!-- Biodata Scanning Station -->
+        <rect x="30" y="105" width="70" height="90" fill="rgba(208,216,232,0.08)" stroke="rgba(208,216,232,0.2)" stroke-width="0.5"/>
+        <text x="65" y="145" text-anchor="middle" class="zone-label-small">BIODATA</text>
+        <text x="65" y="155" text-anchor="middle" class="zone-label-small">SCAN</text>
+        <text x="65" y="168" text-anchor="middle" class="zone-area-text">100 sqft</text>
+        <!-- Scanning ring inside -->
+        <circle cx="65" cy="140" r="14" fill="none" stroke="rgba(208,216,232,0.25)" stroke-width="1"/>
+        <text x="65" y="180" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.3)">OPTIONAL</text>
+        <!-- Transition Corridor -->
+        <rect x="30" y="260" width="222" height="50" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.1)" stroke-width="0.5"/>
+        <text x="141" y="288" text-anchor="middle" class="zone-label-small">TRANSITION CORRIDOR</text>
+        <text x="141" y="300" text-anchor="middle" class="zone-area-text">45 sqft / to 3F</text>
+        <!-- Arrow to stairs -->
+        <path d="M 252 285 L 262 285 L 262 95" fill="none" stroke="rgba(232,224,212,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+    ` + svgClose();
+}
+
+function generate3F() {
+    return svgOpen() + svgCore() + `
+        <!-- Lounge Seating -->
+        <rect x="30" y="30" width="222" height="140" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="141" y="80" text-anchor="middle" class="zone-label">LOUNGE</text>
+        <text x="141" y="92" text-anchor="middle" class="zone-area-text">140 sqft</text>
+        <!-- Suspended light ring -->
+        <circle cx="141" cy="100" r="30" fill="none" stroke="rgba(232,224,212,0.15)" stroke-width="1.5"/>
+        <circle cx="141" cy="100" r="28" fill="none" stroke="rgba(232,224,212,0.05)" stroke-width="3"/>
+        <text x="141" y="104" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">2.0m RING / 3000K</text>
+        <!-- Bench clusters -->
+        <rect x="60" y="115" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="60" y="128" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="162" y="115" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="162" y="128" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <!-- Low table -->
+        <rect x="115" y="118" width="32" height="16" fill="rgba(42,42,48,0.5)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <!-- Cafe Counter -->
+        <rect x="30" y="175" width="150" height="60" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="105" y="200" text-anchor="middle" class="zone-label-small">CAFE COUNTER</text>
+        <text x="105" y="212" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <!-- Counter shape -->
+        <rect x="45" y="190" width="80" height="6" fill="rgba(139,125,107,0.2)" rx="1"/>
+        <!-- Elevator Lobby -->
+        <rect x="182" y="175" width="70" height="85" fill="rgba(233,69,32,0.08)" stroke="rgba(233,69,32,0.2)" stroke-width="0.5"/>
+        <text x="217" y="210" text-anchor="middle" class="zone-label-small">ELEVATOR</text>
+        <text x="217" y="222" text-anchor="middle" class="zone-label-small">LOBBY</text>
+        <text x="217" y="234" text-anchor="middle" class="zone-area-text">60 sqft</text>
+        <!-- Threshold text -->
+        <text x="217" y="250" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.4)">THRESHOLD</text>
+        <!-- Light line at elevator -->
+        <line x1="192" y1="195" x2="242" y2="195" stroke="rgba(232,224,212,0.25)" stroke-width="1.5"/>
+        <!-- Restroom -->
+        <rect x="30" y="240" width="80" height="70" fill="rgba(42,42,48,0.3)" stroke="rgba(42,42,48,0.5)" stroke-width="0.5"/>
+        <text x="70" y="275" text-anchor="middle" class="zone-label-small">WC</text>
+        <text x="70" y="287" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <!-- Warm light slot -->
+        <line x1="33" y1="245" x2="33" y2="305" stroke="rgba(232,224,212,0.12)" stroke-width="2"/>
+        <text x="50" y="300" text-anchor="start" class="zone-area-text" style="fill:rgba(232,224,212,0.2)">3000K</text>
+    ` + svgClose();
+}
+
+function generate4F() {
+    return svgOpen() + svgCore() + `
+        <!-- Checkout Counter -->
+        <rect x="30" y="30" width="130" height="90" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="95" y="70" text-anchor="middle" class="zone-label">CHECKOUT</text>
+        <text x="95" y="82" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <!-- Counter -->
+        <rect x="50" y="55" width="60" height="5" fill="rgba(139,125,107,0.2)" rx="1"/>
+        <!-- Embedded display -->
+        <rect x="72" y="47" width="16" height="10" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <!-- Packaging Station -->
+        <rect x="162" y="30" width="90" height="90" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.1)" stroke-width="0.5"/>
+        <text x="207" y="70" text-anchor="middle" class="zone-label-small">PACKAGING</text>
+        <text x="207" y="82" text-anchor="middle" class="zone-area-text">70 sqft</text>
+        <!-- Glass partition between checkout and packaging -->
+        <line x1="162" y1="35" x2="162" y2="115" stroke="rgba(208,216,232,0.15)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="155" y="75" text-anchor="end" class="zone-area-text" style="fill:rgba(208,216,232,0.2)">GLASS</text>
+        <!-- Pickup Waiting -->
+        <rect x="30" y="125" width="130" height="90" fill="rgba(42,42,48,0.2)" stroke="rgba(42,42,48,0.3)" stroke-width="0.5"/>
+        <text x="95" y="165" text-anchor="middle" class="zone-label-small">PICKUP WAITING</text>
+        <text x="95" y="177" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <!-- Waiting benches -->
+        <rect x="50" y="148" width="35" height="5" fill="rgba(196,168,130,0.1)" rx="1"/>
+        <rect x="95" y="148" width="35" height="5" fill="rgba(196,168,130,0.1)" rx="1"/>
+        <!-- Status display -->
+        <rect x="55" y="140" width="20" height="3" fill="rgba(232,224,212,0.08)"/>
+        <!-- Staff Support -->
+        <rect x="162" y="125" width="90" height="90" fill="rgba(139,125,107,0.04)" stroke="rgba(139,125,107,0.08)" stroke-width="0.5"/>
+        <text x="207" y="170" text-anchor="middle" class="zone-label-small">STAFF</text>
+        <text x="207" y="182" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <!-- Escalator to 1F -->
+        <rect x="30" y="220" width="120" height="90" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <text x="90" y="260" text-anchor="middle" class="zone-label-small">ESCALATOR TO 1F</text>
+        <text x="90" y="272" text-anchor="middle" class="zone-area-text">50 sqft / 3-floor descent</text>
+        <!-- Escalator diagonal -->
+        <line x1="50" y1="235" x2="110" y2="295" stroke="rgba(232,224,212,0.15)" stroke-width="2"/>
+        <!-- Down arrow -->
+        <text x="90" y="290" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">&#8595; TO 1F EXIT</text>
+        <!-- Material note -->
+        <text x="170" y="300" text-anchor="start" class="zone-area-text" style="fill:rgba(139,125,107,0.3)">PAINTED GYPSUM / 4000K</text>
+    ` + svgClose();
+}
+
+function generate5F() {
+    return svgOpen() + `
+        <!-- No standard core visual — 5F is a different world -->
+        <!-- Planetary Environment (full floor) -->
+        <rect x="30" y="30" width="280" height="280" fill="rgba(208,216,232,0.03)" stroke="rgba(208,216,232,0.08)" stroke-width="0.5"/>
+        <!-- Basalt texture dots -->
+        ${Array.from({length: 80}, () => {
+            const x = 35 + Math.random() * 270;
+            const y = 35 + Math.random() * 270;
+            const r = 0.3 + Math.random() * 0.8;
+            return `<circle cx="${x}" cy="${y}" r="${r}" fill="rgba(232,224,212,${0.02 + Math.random() * 0.04})"/>`;
+        }).join('')}
+        <!-- 270-degree surround projection -->
+        <path d="M 310 30 L 310 310 L 30 310 L 30 30" fill="none" stroke="rgba(208,216,232,0.12)" stroke-width="3"/>
+        <text x="25" y="170" text-anchor="middle" class="zone-area-text" transform="rotate(-90, 25, 170)" style="fill:rgba(208,216,232,0.2)">SURROUND PROJECTION</text>
+        <!-- Portal Ring (the 3.0m suspended ring) -->
+        <circle cx="170" cy="170" r="55" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="2"/>
+        <circle cx="170" cy="170" r="53" fill="none" stroke="rgba(232,224,212,0.08)" stroke-width="4"/>
+        <circle cx="170" cy="170" r="57" fill="none" stroke="rgba(232,224,212,0.04)" stroke-width="6"/>
+        <text x="170" y="168" text-anchor="middle" class="zone-label" style="fill:rgba(232,224,212,0.5)">PORTAL RING</text>
+        <text x="170" y="180" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">3.0m / 5500K / FULL</text>
+        <!-- Product Vitrines (5 pedestals under ring) -->
+        <rect x="157" y="145" width="10" height="10" fill="rgba(233,69,32,0.15)" stroke="rgba(233,69,32,0.3)" stroke-width="0.5"/>
+        <text x="162" y="141" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.5)">TB01</text>
+        <rect x="135" y="158" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="180" y="158" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="142" y="180" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="175" y="180" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="170" y="205" text-anchor="middle" class="zone-area-text">5 VITRINES / 80 sqft</text>
+        <!-- Elevator Arrival Zone -->
+        <rect x="35" y="35" width="80" height="60" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="75" y="60" text-anchor="middle" class="zone-label-small">ELEVATOR</text>
+        <text x="75" y="72" text-anchor="middle" class="zone-label-small">ARRIVAL</text>
+        <text x="75" y="84" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <!-- Elevator doors symbol -->
+        <rect x="40" y="38" width="20" height="15" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="50" y1="38" x2="50" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <!-- Arrow from elevator to ring -->
+        <path d="M 75 95 L 75 120 L 140 155" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Accessible path -->
+        <path d="M 60 90 L 60 170 L 135 170" fill="none" stroke="rgba(232,224,212,0.08)" stroke-width="4"/>
+        <text x="60" y="135" text-anchor="start" class="zone-area-text" transform="rotate(-90, 60, 135)" style="fill:rgba(232,224,212,0.15)">ACCESSIBLE PATH</text>
+        <!-- Core (minimal on this floor) -->
+        <rect x="255" y="30" width="55" height="65" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.08)" stroke-width="0.5"/>
+        <text x="282" y="58" text-anchor="middle" class="zone-label-small" style="fill:rgba(232,224,212,0.3)">CORE</text>
+        <!-- Open stair to 6F -->
+        <text x="282" y="72" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.25)">&#8593; TO 6F</text>
+        <!-- Temperature note -->
+        <text x="170" y="300" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.2)">18-19C / 35% RH / CRUSHED BASALT FLOOR</text>
+    ` + svgClose();
+}
+
+function generate6F() {
+    return svgOpen() + svgCore() + `
+        <!-- Robotic Fabrication Theater -->
+        <rect x="30" y="30" width="222" height="160" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="141" y="70" text-anchor="middle" class="zone-label">FABRICATION THEATER</text>
+        <text x="141" y="82" text-anchor="middle" class="zone-area-text">150 sqft / 5000K overhead</text>
+        <!-- Robot arm -->
+        <circle cx="141" cy="120" r="3" fill="rgba(232,224,212,0.2)"/>
+        <line x1="141" y1="120" x2="165" y2="100" stroke="rgba(232,224,212,0.2)" stroke-width="1.5"/>
+        <line x1="165" y1="100" x2="180" y2="115" stroke="rgba(232,224,212,0.2)" stroke-width="1.5"/>
+        <circle cx="180" cy="115" r="2" fill="rgba(232,224,212,0.15)"/>
+        <!-- Robot base plate -->
+        <rect x="125" y="110" width="32" height="32" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="141" y="155" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.25)">KUKA 6-AXIS</text>
+        <!-- Material feed -->
+        <rect x="40" y="95" width="30" height="50" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.1)" stroke-width="0.5"/>
+        <text x="55" y="122" text-anchor="middle" class="zone-area-text">FEED</text>
+        <!-- Glass Partition -->
+        <line x1="30" y1="192" x2="252" y2="192" stroke="rgba(208,216,232,0.25)" stroke-width="1.5"/>
+        <text x="141" y="204" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.35)">12mm LAMINATED GLASS / 3 DEG ANGLE</text>
+        <!-- Viewing Gallery -->
+        <rect x="30" y="195" width="222" height="55" fill="rgba(208,216,232,0.04)" stroke="rgba(208,216,232,0.08)" stroke-width="0.5"/>
+        <text x="141" y="220" text-anchor="middle" class="zone-label-small">VIEWING GALLERY</text>
+        <text x="141" y="232" text-anchor="middle" class="zone-area-text">75 sqft / +200mm raised platform</text>
+        <!-- Telemetry ticker -->
+        <line x1="35" y1="240" x2="247" y2="240" stroke="rgba(233,69,32,0.15)" stroke-width="1"/>
+        <text x="141" y="247" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.3)">TELEMETRY TICKER / REAL-TIME DATA</text>
+        <!-- Handoff Counter -->
+        <rect x="30" y="255" width="130" height="55" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="95" y="278" text-anchor="middle" class="zone-label-small">HANDOFF</text>
+        <text x="95" y="290" text-anchor="middle" class="zone-area-text">60 sqft / 3000K warm</text>
+        <!-- Pass-through hatch -->
+        <rect x="80" y="252" width="12" height="6" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.12)" stroke-width="0.5"/>
+        <text x="86" y="260" text-anchor="middle" class="zone-area-text" style="font-size:5px; fill:rgba(232,224,212,0.2)">HATCH</text>
+        <!-- Back of House -->
+        <rect x="162" y="255" width="90" height="55" fill="rgba(139,125,107,0.04)" stroke="rgba(139,125,107,0.08)" stroke-width="0.5"/>
+        <text x="207" y="278" text-anchor="middle" class="zone-label-small">BOH</text>
+        <text x="207" y="290" text-anchor="middle" class="zone-area-text">40 sqft</text>
+    ` + svgClose();
+}
+
+// ============================================
+// UI Logic
+// ============================================
+let currentFloor = '6F';
+
+function selectFloor(floorId) {
+    currentFloor = floorId;
+
+    // Update button states
+    document.querySelectorAll('.floor-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.floor === floorId);
+    });
+
+    // Update journey nodes
+    document.querySelectorAll('.journey-node').forEach(node => {
+        node.classList.toggle('active', node.dataset.floor === floorId);
+    });
+
+    // Render detail panel
+    renderDetail(floorId);
+}
+
+function renderDetail(floorId) {
+    const floor = floors[floorId];
+    const panel = document.getElementById('detailPanel');
+
+    panel.innerHTML = `
+        <div class="detail-header">
+            <div class="detail-floor-id">${floor.id}</div>
+            <div class="detail-floor-name">${floor.name}</div>
+            <div class="detail-floor-elevation">${floor.elevation}</div>
+        </div>
+
+        <div class="plan-container">
+            ${floor.svg()}
+        </div>
+
+        <div class="zone-list">
+            ${floor.zones.map(z => `
+                <div class="zone-item">
+                    <div class="zone-dot" style="background: ${z.color};"></div>
+                    <div class="zone-item-name">${z.name}</div>
+                    <div class="zone-item-area">${z.area}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="spatial-notes">
+            <div class="spatial-notes-label">Spatial Notes</div>
+            ${floor.notes.map(n => `<div class="spatial-note">${n}</div>`).join('')}
+        </div>
+    `;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    selectFloor('6F');
+});
+</script>
+
+</body>
+</html>

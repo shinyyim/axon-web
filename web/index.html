@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE.X — Future your Performance.</title>
+    <meta name="description" content="DUNE.X is a future apparel laboratory. Clothing, footwear, and accessories designed for the interplanetary era.">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ====== NAVIGATION ====== -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">DUNE.X</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+    </nav>
+
+    <!-- ====== FULLSCREEN MENU ====== -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-content">
+            <a href="#hero" class="menu-link" data-index="01">Landing</a>
+            <a href="#transit-shell" class="menu-link" data-index="02">Transit Shell</a>
+            <a href="#terrain-boot" class="menu-link" data-index="03">Terrain Boot</a>
+            <a href="#mission-kit" class="menu-link" data-index="04">Mission Kit</a>
+            <a href="#specs" class="menu-link" data-index="05">Specifications</a>
+            <a href="#concept" class="menu-link" data-index="06">Concept</a>
+        </div>
+        <div class="menu-footer">
+            <span class="menu-footer-item">Instagram</span>
+            <span class="menu-footer-item">X</span>
+            <span class="menu-footer-item">Contact</span>
+        </div>
+    </div>
+
+    <!-- ====== HERO SECTION ====== -->
+    <section class="section section-hero" id="hero">
+        <div class="section-bg">
+            <img src="image_new/1.jpg" alt="Vast dark runway with solitary figure" loading="eager">
+        </div>
+        <div class="section-overlay"></div>
+        <div class="section-content hero-content">
+            <h1 class="hero-title">FUTURE YOUR PERFORMANCE.</h1>
+            <p class="hero-subtitle">Apparel engineered at the threshold of departure. Designed for the body that moves beyond.</p>
+            <a href="#transit-shell" class="btn btn-hollow btn-small">
+                Explore
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+        <div class="scroll-indicator">
+            <span class="scroll-indicator-text">Scroll</span>
+            <div class="scroll-indicator-line"></div>
+        </div>
+    </section>
+
+    <!-- ====== TRANSIT SHELL ====== -->
+    <section class="section section-product" id="transit-shell">
+        <div class="section-bg">
+            <img src="image_new/9.jpg" alt="Transit Shell 01 — transparent membrane jacket" loading="lazy">
+        </div>
+        <div class="section-overlay"></div>
+        <div class="section-content product-content fade-up">
+            <span class="product-label">01</span>
+            <h2 class="product-title">TRANSIT SHELL 01</h2>
+            <p class="product-description">Parametric-cut membrane jacket. 4-layer adaptive composite. Sealed seam architecture derived from pressure vessel engineering.</p>
+            <a href="#" class="btn btn-hollow">
+                Explore
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== TERRAIN BOOT ====== -->
+    <section class="section section-product" id="terrain-boot">
+        <div class="section-bg">
+            <img src="image_new/10.jpg" alt="Terrain Boot 01 — techwear detail" loading="lazy">
+        </div>
+        <div class="section-overlay"></div>
+        <div class="section-content product-content fade-up">
+            <span class="product-label">02</span>
+            <h2 class="product-title">TERRAIN BOOT 01</h2>
+            <p class="product-description">3D-printed sole matrix. Regolith-grade tread geometry. Ankle articulation engineered for low-gravity terrain traversal.</p>
+            <a href="#" class="btn btn-hollow">
+                Explore
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== CAMPAIGN IMAGE ====== -->
+    <section class="section section-campaign" id="campaign">
+        <div class="section-bg">
+            <img src="image_new/4.jpg" alt="DUNE.X campaign — figure at light portal" loading="lazy">
+        </div>
+        <div class="section-overlay section-overlay--light"></div>
+        <div class="section-content campaign-content fade-up">
+            <p class="campaign-text">Departure is a state of mind.</p>
+        </div>
+    </section>
+
+    <!-- ====== SPECS / STATS ====== -->
+    <section class="section section-specs" id="specs">
+        <div class="section-content specs-content fade-up">
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <span class="spec-number" data-target="4">0</span>
+                    <span class="spec-label">Layers</span>
+                </div>
+                <div class="spec-divider"></div>
+                <div class="spec-item">
+                    <span class="spec-number" data-target="3.2" data-decimal="true">0</span>
+                    <span class="spec-unit">mm</span>
+                    <span class="spec-label">Membrane</span>
+                </div>
+                <div class="spec-divider"></div>
+                <div class="spec-item">
+                    <span class="spec-number" data-target="360">0</span>
+                    <span class="spec-unit">°</span>
+                    <span class="spec-label">Sealed Seams</span>
+                </div>
+                <div class="spec-divider"></div>
+                <div class="spec-item">
+                    <span class="spec-number" data-target="0">0</span>
+                    <span class="spec-label">Waste</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== MISSION KIT ====== -->
+    <section class="section section-product" id="mission-kit">
+        <div class="section-bg">
+            <img src="image_new/8.jpg" alt="Mission Kit — coat on lunar surface" loading="lazy">
+        </div>
+        <div class="section-overlay"></div>
+        <div class="section-content product-content fade-up">
+            <span class="product-label">03</span>
+            <h2 class="product-title">MISSION KIT</h2>
+            <p class="product-description">Essential carry. Modular pouch system with magnetic docking. Compression-molded shell. Designed for transit, not storage.</p>
+            <a href="#" class="btn btn-hollow">
+                Explore
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== CONCEPT / MANIFESTO ====== -->
+    <section class="section section-concept" id="concept">
+        <div class="section-bg">
+            <img src="image_new/5.jpg" alt="Astronaut in deep space — departure" loading="lazy">
+        </div>
+        <div class="section-overlay section-overlay--heavy"></div>
+        <div class="section-content concept-content fade-up">
+            <h2 class="concept-heading">WE DRESS THE DEPARTURE</h2>
+            <p class="concept-text">Dune.X exists for the generation that looks up. Not with nostalgia, but with intent. We are not making costumes for science fiction — we are engineering the wardrobe for what comes next.</p>
+            <p class="concept-text">Every garment begins as a question: What does the body need when the ground beneath it is no longer Earth?</p>
+            <a href="#" class="btn btn-hollow">
+                Read More
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== RETAIL / FLAGSHIP ====== -->
+    <section class="section section-product" id="flagship">
+        <div class="section-bg">
+            <img src="image_new/2.jpg" alt="DUNE.X flagship — circular arena with star ceiling" loading="lazy">
+        </div>
+        <div class="section-overlay"></div>
+        <div class="section-content product-content fade-up">
+            <span class="product-label">Flagship</span>
+            <h2 class="product-title">THE ARRIVAL CHAMBER</h2>
+            <p class="product-description">Not a store. A threshold between worlds. Opening 2027.</p>
+            <a href="#" class="btn btn-hollow">
+                Preview
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">DUNE.X</div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">X</a>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+            <div class="footer-legal">&copy; 2026 DUNE.X. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

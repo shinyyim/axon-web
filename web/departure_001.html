@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE.X — DEPARTURE 001</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+        :root {
+            --void: #0A0A0C;
+            --bone: #E8E0D4;
+            --signal: #E94520;
+            --haze: #2A2A30;
+            --dust: #8B7D6B;
+            --membrane: #1E1E24;
+            --regolith: #C4A882;
+            --cold: #D0D8E8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        ::selection {
+            background: var(--signal);
+            color: var(--void);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y proximity;
+        }
+
+        body {
+            background: var(--void);
+            color: var(--bone);
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ═══════════════════════════════════════════
+           TYPOGRAPHY
+           ═══════════════════════════════════════════ */
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .text-xs { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
+        .text-sm { font-size: 12px; letter-spacing: 1px; }
+        .text-body { font-size: 14px; line-height: 1.7; }
+        .text-lg { font-size: 18px; line-height: 1.5; }
+        .text-xl { font-size: clamp(28px, 5vw, 48px); font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+        .text-display { font-size: clamp(48px, 10vw, 120px); font-weight: 900; letter-spacing: -3px; line-height: 0.9; }
+
+        .text-dust { color: var(--dust); }
+        .text-signal { color: var(--signal); }
+        .text-bone { color: var(--bone); }
+        .text-cold { color: var(--cold); }
+
+        /* ═══════════════════════════════════════════
+           NAV
+           ═══════════════════════════════════════════ */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'Inter';
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover { opacity: 1; }
+
+        /* ═══════════════════════════════════════════
+           SECTION: HERO
+           ═══════════════════════════════════════════ */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('image_new/1.jpg') center/cover;
+            filter: brightness(0.95);
+            transform: scale(1.03);
+            animation: heroZoom 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroZoom {
+            from { transform: scale(1.03); }
+            to { transform: scale(1.08); }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--void) 0%, rgba(10,10,12,0.1) 25%, transparent 50%, rgba(10,10,12,0.15) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hero-title {
+            font-size: clamp(20px, 3vw, 38px);
+            font-weight: 800;
+            letter-spacing: clamp(6px, 1.5vw, 16px);
+            text-transform: uppercase;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .hero-sub {
+            font-size: clamp(11px, 1.1vw, 14px);
+            font-weight: 400;
+            color: rgba(232,224,212,0.65);
+            line-height: 1.6;
+            max-width: 420px;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--bone);
+            border: 1px solid rgba(232,224,212,0.25);
+            padding: 8px 20px;
+            text-decoration: none;
+            transition: all 0.4s;
+            margin-top: 6px;
+        }
+
+        .hero-cta:hover {
+            border-color: var(--bone);
+            background: rgba(232,224,212,0.05);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-scroll-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--dust);
+            text-transform: uppercase;
+        }
+
+        .hero-scroll-line {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(to bottom, var(--dust), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: MANIFESTO
+           ═══════════════════════════════════════════ */
+        .manifesto {
+            padding: 160px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .manifesto-text h2 {
+            font-size: clamp(32px, 4vw, 56px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -1px;
+            margin-bottom: 32px;
+        }
+
+        .manifesto-text p {
+            font-size: 14px;
+            color: var(--dust);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            max-width: 440px;
+        }
+
+        .manifesto-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .stat-item {
+            border-left: 1px solid rgba(232,224,212,0.08);
+            padding-left: 20px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--bone);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--dust);
+            text-transform: uppercase;
+        }
+
+        .manifesto-visual {
+            position: relative;
+            height: 600px;
+        }
+
+        .manifesto-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) contrast(1.1);
+        }
+
+        .manifesto-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(232,224,212,0.06);
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: FILM
+           ═══════════════════════════════════════════ */
+        .film {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .film-bg {
+            position: absolute;
+            inset: 0;
+            background: url('image_new/4.jpg') center/cover;
+            filter: brightness(0.3) contrast(1.3);
+        }
+
+        .film-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 20%, var(--void) 80%);
+        }
+
+        .film-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 700px;
+            padding: 40px;
+        }
+
+        .film-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: var(--dust);
+            margin-bottom: 40px;
+        }
+
+        .film-sequence {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 48px;
+        }
+
+        .film-line {
+            font-size: clamp(16px, 2.5vw, 24px);
+            font-weight: 300;
+            color: var(--bone);
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        .film-line:nth-child(4) {
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .film-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--dust);
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .film-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .film-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--signal);
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: COLLECTION GRID
+           ═══════════════════════════════════════════ */
+        .collection {
+            padding: 160px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 64px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(232,224,212,0.06);
+        }
+
+        .section-header h2 {
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .section-header .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--dust);
+            text-transform: uppercase;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .product-card {
+            background: var(--membrane);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .product-card:hover {
+            background: var(--haze);
+        }
+
+        .product-card:hover .product-card-img {
+            transform: scale(1.03);
+            filter: brightness(0.6);
+        }
+
+        .product-card.hero-product {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .product-card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            filter: brightness(0.45) contrast(1.1);
+            transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .product-card.hero-product .product-card-img {
+            aspect-ratio: auto;
+            height: 100%;
+        }
+
+        .product-card-info {
+            padding: 20px 24px;
+        }
+
+        .product-card-tier {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .tier-signal { color: var(--signal); }
+        .tier-transit { color: var(--cold); }
+        .tier-protocol { color: var(--dust); }
+
+        .product-card-name {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .product-card-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--dust);
+        }
+
+        .product-card-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--void);
+            background: var(--signal);
+            padding: 4px 10px;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: HERO PRODUCT DEEP DIVE
+           ═══════════════════════════════════════════ */
+        .product-deep {
+            padding: 0 60px 160px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .deep-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .deep-visual {
+            position: sticky;
+            top: 100px;
+        }
+
+        .deep-visual img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            filter: brightness(0.6) contrast(1.15);
+        }
+
+        .deep-info {
+            padding-top: 40px;
+        }
+
+        .deep-info .product-tier {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--signal);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .deep-info h3 {
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .deep-info .product-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--dust);
+            margin-bottom: 32px;
+        }
+
+        .deep-info .product-desc {
+            font-size: 14px;
+            color: var(--dust);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 480px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            margin-bottom: 40px;
+        }
+
+        .spec-cell {
+            background: var(--membrane);
+            padding: 16px 20px;
+        }
+
+        .spec-cell-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--dust);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .spec-cell-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--bone);
+        }
+
+        .biodata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        .biodata-table th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dust);
+            text-align: left;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(232,224,212,0.08);
+        }
+
+        .biodata-table td {
+            font-size: 12px;
+            color: var(--bone);
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(232,224,212,0.04);
+        }
+
+        .biodata-table td:last-child {
+            color: var(--dust);
+            font-size: 11px;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: BIODATA
+           ═══════════════════════════════════════════ */
+        .biodata {
+            position: relative;
+            padding: 160px 60px;
+            overflow: hidden;
+        }
+
+        .biodata-bg {
+            position: absolute;
+            inset: 0;
+            background: url('image_new/11.jpg') center/cover;
+            filter: brightness(0.2) contrast(1.2);
+            opacity: 0.5;
+        }
+
+        .biodata-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .biodata-text h2 {
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.05;
+            margin-bottom: 24px;
+        }
+
+        .biodata-text p {
+            font-size: 14px;
+            color: var(--dust);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .scan-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .scan-step {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(232,224,212,0.06);
+        }
+
+        .scan-step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 300;
+            color: rgba(232,224,212,0.15);
+        }
+
+        .scan-step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--bone);
+            margin-bottom: 4px;
+        }
+
+        .scan-step-desc {
+            font-size: 12px;
+            color: var(--dust);
+            line-height: 1.6;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: FLAGSHIP
+           ═══════════════════════════════════════════ */
+        .flagship {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .flagship-bg {
+            position: absolute;
+            inset: 0;
+            background: url('image_new/2.jpg') center/cover;
+            filter: brightness(0.35) contrast(1.2);
+        }
+
+        .flagship-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--void) 0%, transparent 50%);
+        }
+
+        .flagship-content {
+            position: relative;
+            z-index: 2;
+            padding: 60px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: end;
+        }
+
+        .flagship-text h2 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .flagship-text p {
+            font-size: 14px;
+            color: var(--dust);
+            line-height: 1.8;
+            max-width: 440px;
+        }
+
+        .flagship-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+
+        .flagship-spec {
+            background: rgba(10,10,12,0.7);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            border: 1px solid rgba(232,224,212,0.04);
+        }
+
+        .flagship-spec-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--dust);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .flagship-spec-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: DROP TIMELINE
+           ═══════════════════════════════════════════ */
+        .timeline {
+            padding: 160px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+
+        .timeline-phase {
+            background: var(--membrane);
+            padding: 32px 24px;
+            border-top: 2px solid var(--haze);
+            transition: all 0.4s;
+        }
+
+        .timeline-phase:hover {
+            border-top-color: var(--signal);
+            background: var(--haze);
+        }
+
+        .timeline-phase-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--signal);
+            margin-bottom: 12px;
+        }
+
+        .timeline-phase-name {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-phase-desc {
+            font-size: 12px;
+            color: var(--dust);
+            line-height: 1.6;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION: TRANSIT SHELL
+           ═══════════════════════════════════════════ */
+        .transit-shell {
+            padding: 0 60px 160px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .ts-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            min-height: 600px;
+        }
+
+        .ts-visual {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ts-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.55) contrast(1.1);
+        }
+
+        .ts-info {
+            background: var(--membrane);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ts-info .product-tier {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--cold);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .ts-info h3 {
+            font-size: clamp(24px, 3vw, 40px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+        }
+
+        .ts-info p {
+            font-size: 14px;
+            color: var(--dust);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .layer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(232,224,212,0.06);
+            font-size: 12px;
+        }
+
+        .layer-item .name { color: var(--bone); }
+        .layer-item .detail {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--dust);
+        }
+
+        /* ═══════════════════════════════════════════
+           FOOTER
+           ═══════════════════════════════════════════ */
+        footer {
+            padding: 80px 60px;
+            border-top: 1px solid rgba(232,224,212,0.06);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            color: var(--dust);
+            line-height: 1.6;
+            max-width: 280px;
+        }
+
+        .footer-col h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dust);
+            margin-bottom: 16px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 13px;
+            color: rgba(232,224,212,0.5);
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover { color: var(--bone); }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 24px;
+            border-top: 1px solid rgba(232,224,212,0.04);
+        }
+
+        .footer-bottom span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(232,224,212,0.2);
+            letter-spacing: 1px;
+        }
+
+        /* ═══════════════════════════════════════════
+           DIVIDER
+           ═══════════════════════════════════════════ */
+        .divider {
+            height: 1px;
+            background: rgba(232,224,212,0.06);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ═══════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .manifesto, .deep-layout, .biodata-content, .flagship-content, .footer-grid { grid-template-columns: 1fr; }
+            .product-grid { grid-template-columns: 1fr 1fr; }
+            .product-card.hero-product { grid-column: span 2; grid-row: span 1; }
+            .timeline-grid { grid-template-columns: 1fr 1fr; }
+            .ts-layout { grid-template-columns: 1fr; }
+            .hero, .film, .flagship { padding: 40px; }
+            nav { padding: 16px 24px; }
+            .nav-links { display: none; }
+        }
+
+        /* ═══════════════════════════════════════════
+           ANIMATIONS
+           ═══════════════════════════════════════════ */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">DUNE.X</div>
+    <ul class="nav-links">
+        <li><a href="#collection">Collection</a></li>
+        <li><a href="#film">Film</a></li>
+        <li><a href="#biodata">Biodata</a></li>
+        <li><a href="#flagship">Flagship</a></li>
+    </ul>
+</nav>
+
+<!-- ████████████████████████████████████████████
+     HERO
+     ████████████████████████████████████████████ -->
+<section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">FUTURE YOUR PERFORMANCE.</h1>
+        <p class="hero-sub">Apparel engineered at the threshold of departure.<br>Designed for the body that moves beyond.</p>
+        <a href="#collection" class="hero-cta">
+            Explore
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+        </a>
+    </div>
+    <div class="hero-scroll">
+        <span class="hero-scroll-text">Scroll</span>
+        <div class="hero-scroll-line"></div>
+    </div>
+</section>
+
+<!-- ████████████████████████████████████████████
+     MANIFESTO
+     ████████████████████████████████████████████ -->
+<section class="manifesto fade-in">
+    <div class="manifesto-text">
+        <h2>The body departs first.</h2>
+        <p>DEPARTURE 001 is not a collection. It is a system. Every piece relates to every other piece. The Transit Shell accommodates the Transit Pack's attachment points. The Terrain Boot's sole lattice generates the pattern language applied to the Specimen Container.</p>
+        <p>You buy into a system that begins with your body and ends with a complete architecture for transit.</p>
+
+        <div class="manifesto-stats">
+            <div class="stat-item">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Pieces</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Tiers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Identical units</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">6F</div>
+                <div class="stat-label">Manufacturing</div>
+            </div>
+        </div>
+    </div>
+    <div class="manifesto-visual">
+        <img src="image_new/5.jpg" alt="DUNE.X concept">
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ████████████████████████████████████████████
+     FILM: SIGNAL
+     ████████████████████████████████████████████ -->
+<section class="film" id="film">
+    <div class="film-bg"></div>
+    <div class="film-overlay"></div>
+    <div class="film-content fade-in">
+        <div class="film-label">Film &mdash; "Signal" &mdash; 45s</div>
+        <div class="film-sequence">
+            <div class="film-line">"The body generates data."</div>
+            <div class="film-line">"Data reveals patterns."</div>
+            <div class="film-line">"Patterns shape form."</div>
+            <div class="film-line">"Form defines motion."</div>
+        </div>
+        <div class="film-meta">
+            <span><div class="film-dot"></div> 2.39:1 Cinemascope</span>
+            <span><div class="film-dot"></div> ALEXA 65</span>
+            <span><div class="film-dot"></div> Zero hard cuts</span>
+            <span><div class="film-dot"></div> No music</span>
+        </div>
+    </div>
+</section>
+
+<!-- ████████████████████████████████████████████
+     COLLECTION GRID
+     ████████████████████████████████████████████ -->
+<section class="collection" id="collection">
+    <div class="section-header fade-in">
+        <h2>The System.</h2>
+        <span class="tag">7 Pieces / 3 Tiers</span>
+    </div>
+
+    <div class="product-grid">
+        <!-- HERO: Terrain Boot -->
+        <div class="product-card hero-product">
+            <div class="product-card-badge">Hero</div>
+            <img class="product-card-img" src="image_new/10.jpg" alt="Terrain Boot 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-signal">Signal</div>
+                <div class="product-card-name">TERRAIN BOOT 01</div>
+                <div class="product-card-price">$480 &ndash; 620 / Custom</div>
+            </div>
+        </div>
+
+        <!-- Transit Shell -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/9.jpg" alt="Transit Shell 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-signal">Signal</div>
+                <div class="product-card-name">TRANSIT SHELL 01</div>
+                <div class="product-card-price">$680 &ndash; 840 / Custom</div>
+            </div>
+        </div>
+
+        <!-- Signal Layer -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/7.jpg" alt="Signal Layer 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-protocol">Protocol</div>
+                <div class="product-card-name">SIGNAL LAYER 01</div>
+                <div class="product-card-price">$180 &ndash; 220 / Standard</div>
+            </div>
+        </div>
+
+        <!-- Transit Pack -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/8.jpg" alt="Transit Pack 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-transit">Transit</div>
+                <div class="product-card-name">TRANSIT PACK 01</div>
+                <div class="product-card-price">$320 &ndash; 380 / Standard</div>
+            </div>
+        </div>
+
+        <!-- Visor -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/6.jpg" alt="Visor 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-transit">Transit</div>
+                <div class="product-card-name">VISOR 01</div>
+                <div class="product-card-price">$280 &ndash; 340 / Semi-Custom</div>
+            </div>
+        </div>
+
+        <!-- Specimen Container -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/3.jpg" alt="Specimen Container 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-protocol">Protocol</div>
+                <div class="product-card-name">SPECIMEN CONTAINER 01</div>
+                <div class="product-card-price">$140 &ndash; 180 / Standard</div>
+            </div>
+        </div>
+
+        <!-- Datum Band -->
+        <div class="product-card">
+            <img class="product-card-img" src="image_new/12.jpg" alt="Datum Band 01">
+            <div class="product-card-info">
+                <div class="product-card-tier tier-protocol">Protocol</div>
+                <div class="product-card-name">DATUM BAND 01</div>
+                <div class="product-card-price">$220 &ndash; 260 / Standard</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ████████████████████████████████████████████
+     TERRAIN BOOT DEEP DIVE
+     ████████████████████████████████████████████ -->
+<section class="product-deep" id="terrain-boot">
+    <div class="deep-layout">
+        <div class="deep-visual">
+            <img src="image_new/10.jpg" alt="Terrain Boot 01">
+        </div>
+        <div class="deep-info fade-in">
+            <div class="product-tier">Signal Tier / Custom / Biodata-Driven</div>
+            <h3>TERRAIN<br>BOOT 01</h3>
+            <div class="product-sub">DX-TB01-[UNIT ID] &mdash; $480&ndash;620</div>
+            <p class="product-desc">The first shoe engineered from the act of walking. A 120-second walk on a pressure-plate treadmill produces a complete gait profile. AI processes this data into a computational lattice sole — a structure where every cell density, wall thickness, and tread node is determined by how one specific body moves.</p>
+
+            <div class="spec-grid">
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Lattice</div>
+                    <div class="spec-cell-value">Gyroid TPMS</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Cell Count</div>
+                    <div class="spec-cell-value">2,400&ndash;3,800</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Weight</div>
+                    <div class="spec-cell-value">340&ndash;380g</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Process</div>
+                    <div class="spec-cell-value">SLS 3D Print</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Material</div>
+                    <div class="spec-cell-value">TPU Lattice</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Tread Nodes</div>
+                    <div class="spec-cell-value">30 Contact</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Sole Height</div>
+                    <div class="spec-cell-value">32mm Heel</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-cell-label">Colorways</div>
+                    <div class="spec-cell-value">Void / Bone</div>
+                </div>
+            </div>
+
+            <table class="biodata-table">
+                <tr><th>Gait Parameter</th><th>Lattice Response</th></tr>
+                <tr><td>Heel strike force</td><td>Heel density + wall thickness</td></tr>
+                <tr><td>Midfoot pressure</td><td>Arch support topology</td></tr>
+                <tr><td>Pronation angle</td><td>Medial/lateral asymmetry</td></tr>
+                <tr><td>Toe-off vector</td><td>Forefoot energy return</td></tr>
+                <tr><td>Cadence</td><td>Overall stiffness tuning</td></tr>
+                <tr><td>Body weight</td><td>Global density scaling</td></tr>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ████████████████████████████████████████████
+     TRANSIT SHELL
+     ████████████████████████████████████████████ -->
+<section class="transit-shell">
+    <div class="ts-layout">
+        <div class="ts-visual">
+            <img src="image_new/9.jpg" alt="Transit Shell 01">
+        </div>
+        <div class="ts-info fade-in">
+            <div class="product-tier">Signal Tier / Custom / Biodata-Driven</div>
+            <h3>TRANSIT SHELL 01</h3>
+            <p>A jacket that knows the body before it covers it. 23 RF-welded panels. Zero thread. A transparent outer membrane reveals the structural lattice beneath.</p>
+
+            <div class="layer-list">
+                <div class="layer-item">
+                    <span class="name">L1: Outer Membrane</span>
+                    <span class="detail">TPU film, 0.3mm thermoformed</span>
+                </div>
+                <div class="layer-item">
+                    <span class="name">L2: Structural Lattice</span>
+                    <span class="detail">3D-printed TPU, 3&ndash;8mm</span>
+                </div>
+                <div class="layer-item">
+                    <span class="name">L3: Adaptive Insulation</span>
+                    <span class="detail">Aerogel composite, 4&ndash;12mm</span>
+                </div>
+                <div class="layer-item">
+                    <span class="name">L4: Contact Layer</span>
+                    <span class="detail">Computational knit, 0.8mm</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <div class="spec-cell-label">Price</div>
+                <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">$680 &ndash; 840</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ████████████████████████████████████████████
+     BIODATA EXPERIENCE
+     ████████████████████████████████████████████ -->
+<section class="biodata" id="biodata">
+    <div class="biodata-bg"></div>
+    <div class="biodata-content">
+        <div class="biodata-text fade-in">
+            <h2>The scan becomes structure.</h2>
+            <p>Your body generates data. DUNE.X turns that data into material. Biodata scanning is optional — but if you step onto the platform, the system reads your gait, your thermal map, your dimensions. The result is a product computed from you. No two units identical.</p>
+            <p>The body is the template. Not a size chart.</p>
+        </div>
+        <div class="scan-steps fade-in">
+            <div class="scan-step">
+                <div class="scan-step-num">01</div>
+                <div>
+                    <div class="scan-step-title">Gait Analysis</div>
+                    <div class="scan-step-desc">120-second walk on pressure-plate treadmill. Strike pattern, force distribution, cadence rhythm captured.</div>
+                </div>
+            </div>
+            <div class="scan-step">
+                <div class="scan-step-num">02</div>
+                <div>
+                    <div class="scan-step-title">3D Body Scan</div>
+                    <div class="scan-step-desc">Structured-light full-body capture. 12 depth cameras. 45-second cycle on 3m circular platform.</div>
+                </div>
+            </div>
+            <div class="scan-step">
+                <div class="scan-step-num">03</div>
+                <div>
+                    <div class="scan-step-title">Thermal Mapping</div>
+                    <div class="scan-step-desc">Infrared body heat distribution. Identifies insulation zones for Transit Shell adaptive layering.</div>
+                </div>
+            </div>
+            <div class="scan-step">
+                <div class="scan-step-num">04</div>
+                <div>
+                    <div class="scan-step-title">AI Translation</div>
+                    <div class="scan-step-desc">Raw data becomes manufacturing parameters. Lattice density, panel cuts, membrane thickness computed in real time.</div>
+                </div>
+            </div>
+            <div class="scan-step">
+                <div class="scan-step-num">05</div>
+                <div>
+                    <div class="scan-step-title">Fabrication</div>
+                    <div class="scan-step-desc">KUKA 6-axis robotic arm. SLS 3D printing. On-site at 6F. Terrain Boot cycle: ~22 minutes.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ████████████████████████████████████████████
+     FLAGSHIP
+     ████████████████████████████████████████████ -->
+<section class="flagship" id="flagship">
+    <div class="flagship-bg"></div>
+    <div class="flagship-overlay"></div>
+    <div class="flagship-content">
+        <div class="flagship-text fade-in">
+            <h2>The vertical airlock.</h2>
+            <p>Seven floors. 30 meters from street to departure. The building is the final product — a dark monolith where you ascend through biodata scanning, cafe, and the portal reveal, before your piece is fabricated on the top floor and handed to you on the way down.</p>
+        </div>
+        <div class="flagship-specs fade-in">
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Height</div>
+                <div class="flagship-spec-value">30m / 7 Floors</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Footprint</div>
+                <div class="flagship-spec-value">5.8m x 5.8m</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Total GFA</div>
+                <div class="flagship-spec-value">2,590 sqft</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Construction</div>
+                <div class="flagship-spec-value">New Build</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">5F Reveal</div>
+                <div class="flagship-spec-value">3.0m Portal Ring</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">6F Mfg</div>
+                <div class="flagship-spec-value">KUKA Robotic Arm</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Elevator</div>
+                <div class="flagship-spec-value">Skips 4F on Ascent</div>
+            </div>
+            <div class="flagship-spec">
+                <div class="flagship-spec-label">Temp (5F)</div>
+                <div class="flagship-spec-value">18°C / 35% RH</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ████████████████████████████████████████████
+     DROP TIMELINE
+     ████████████████████████████████████████████ -->
+<section class="timeline">
+    <div class="section-header fade-in">
+        <h2>Launch Sequence.</h2>
+        <span class="tag">Shoe-First Strategy</span>
+    </div>
+
+    <div class="timeline-grid">
+        <div class="timeline-phase fade-in">
+            <div class="timeline-phase-time">T-60 Days</div>
+            <div class="timeline-phase-name">TEASE</div>
+            <div class="timeline-phase-desc">No product photography. Biodata visualization footage only. Pressure maps, gait data, lattice generation. The product is implied.</div>
+        </div>
+        <div class="timeline-phase fade-in">
+            <div class="timeline-phase-time">T-30 Days</div>
+            <div class="timeline-phase-name">REVEAL</div>
+            <div class="timeline-phase-desc">Terrain Boot 01 shown in full. Campaign imagery on dark void. Pre-order opens for in-store scan appointments.</div>
+        </div>
+        <div class="timeline-phase fade-in">
+            <div class="timeline-phase-time">T-0 Launch</div>
+            <div class="timeline-phase-name">SYSTEM</div>
+            <div class="timeline-phase-desc">Full 7-piece collection revealed. Standard pieces available immediately. Custom pieces by scan appointment only.</div>
+        </div>
+        <div class="timeline-phase fade-in">
+            <div class="timeline-phase-time">T+14 Days</div>
+            <div class="timeline-phase-name">FLAGSHIP</div>
+            <div class="timeline-phase-desc">All floors operational. 6F manufacturing running. B1 event programming begins. The building is the final product.</div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ████████████████████████████████████████████
+     FOOTER
+     ████████████████████████████████████████████ -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand">DUNE.X</div>
+            <p class="footer-tagline">Future your performance. Technical fashion at the threshold of departure.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Collection</h4>
+            <a href="#">Terrain Boot 01</a>
+            <a href="#">Transit Shell 01</a>
+            <a href="#">Signal Layer 01</a>
+            <a href="#">Transit Pack 01</a>
+            <a href="#">Visor 01</a>
+        </div>
+        <div class="footer-col">
+            <h4>Experience</h4>
+            <a href="#">Biodata Scan</a>
+            <a href="#">Flagship Store</a>
+            <a href="#">Manufacturing</a>
+            <a href="#">Events</a>
+        </div>
+        <div class="footer-col">
+            <h4>System</h4>
+            <a href="#">Frame Sizing</a>
+            <a href="#">Colorways</a>
+            <a href="#">Materials</a>
+            <a href="#">Care Protocol</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>DEPARTURE 001 &mdash; THE BODY DEPARTS FIRST.</span>
+        <span>&copy; DUNE.X 2026</span>
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCROLL ANIMATION
+     ═══════════════════════════════════════════ -->
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

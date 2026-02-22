@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE.X — Agent Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0A0A0C;
+            color: #E8E0D4;
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            background: #111114;
+            border-right: 1px solid rgba(232, 224, 212, 0.06);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(232, 224, 212, 0.06);
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+        }
+
+        .sidebar-header .sub {
+            font-size: 10px;
+            color: #8B7D6B;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .sidebar-section {
+            padding: 16px 12px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #5a5a60;
+            text-transform: uppercase;
+        }
+
+        .channel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 20px;
+            cursor: pointer;
+            border-radius: 0;
+            transition: background 0.15s;
+            position: relative;
+        }
+
+        .channel:hover { background: rgba(232, 224, 212, 0.04); }
+        .channel.selected { background: rgba(233, 69, 32, 0.1); }
+
+        .channel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .channel-dot.working { background: #E94520; animation: pulse 1.5s infinite; }
+        .channel-dot.idle { background: #2A2A30; border: 1px solid #4a4a50; }
+        .channel-dot.done { background: #4CAF50; }
+
+        .channel-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #b0a89c;
+        }
+
+        .channel.selected .channel-name { color: #E8E0D4; font-weight: 600; }
+
+        .channel-badge {
+            margin-left: auto;
+            background: #E94520;
+            color: #0A0A0C;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .channel-status {
+            margin-left: auto;
+            font-size: 9px;
+            color: #5a5a60;
+            letter-spacing: 0.5px;
+        }
+
+        .channel.selected .channel-status { color: #E94520; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Sidebar stats */
+        .sidebar-stats {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(232, 224, 212, 0.06);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mini-stat {
+            text-align: center;
+        }
+
+        .mini-stat-val {
+            font-size: 20px;
+            font-weight: 300;
+            color: #E8E0D4;
+        }
+
+        .mini-stat-label {
+            font-size: 9px;
+            color: #5a5a60;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ===== MAIN AREA ===== */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* Top bar */
+        .topbar {
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(232, 224, 212, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .topbar-channel {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .topbar-desc {
+            font-size: 12px;
+            color: #8B7D6B;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .typing-indicator {
+            font-size: 11px;
+            color: #E94520;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 4px;
+            height: 4px;
+            background: #E94520;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* Messages area */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 24px;
+        }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #2A2A30; border-radius: 3px; }
+
+        /* Message */
+        .msg {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            align-items: flex-start;
+        }
+
+        .msg + .msg-same { padding-top: 2px; }
+
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .msg-avatar.spatial { background: rgba(233, 69, 32, 0.2); color: #E94520; }
+        .msg-avatar.film { background: rgba(100, 149, 237, 0.2); color: #6495ED; }
+        .msg-avatar.product { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .msg-avatar.ux { background: rgba(196, 168, 130, 0.2); color: #C4A882; }
+        .msg-avatar.brand { background: rgba(186, 85, 211, 0.2); color: #BA55D3; }
+        .msg-avatar.leader { background: rgba(232, 224, 212, 0.12); color: #E8E0D4; }
+        .msg-avatar.system { background: rgba(42, 42, 48, 0.8); color: #5a5a60; }
+
+        .msg-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .msg-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .msg-name.spatial { color: #E94520; }
+        .msg-name.film { color: #6495ED; }
+        .msg-name.product { color: #4CAF50; }
+        .msg-name.ux { color: #C4A882; }
+        .msg-name.brand { color: #BA55D3; }
+        .msg-name.leader { color: #E8E0D4; }
+        .msg-name.system { color: #5a5a60; }
+
+        .msg-time {
+            font-size: 10px;
+            color: #4a4a50;
+        }
+
+        .msg-tag {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: rgba(232, 224, 212, 0.06);
+            color: #8B7D6B;
+        }
+
+        .msg-text {
+            font-size: 13px;
+            color: #b0a89c;
+            line-height: 1.55;
+        }
+
+        .msg-text code {
+            background: rgba(232, 224, 212, 0.06);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #C4A882;
+        }
+
+        .msg-file {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(232, 224, 212, 0.04);
+            border: 1px solid rgba(232, 224, 212, 0.08);
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8B7D6B;
+        }
+
+        .msg-file .file-icon {
+            font-size: 14px;
+        }
+
+        /* Divider */
+        .day-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+        }
+
+        .day-divider::before,
+        .day-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(232, 224, 212, 0.06);
+        }
+
+        .day-divider span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #5a5a60;
+            letter-spacing: 1px;
+        }
+
+        /* Decision block */
+        .msg-decision {
+            background: rgba(76, 175, 80, 0.06);
+            border-left: 3px solid #4CAF50;
+            padding: 8px 14px;
+            margin-top: 6px;
+            border-radius: 0 6px 6px 0;
+            font-size: 12px;
+            color: #8B7D6B;
+        }
+
+        .msg-decision strong { color: #4CAF50; }
+
+        /* Progress section in right panel */
+        .right-panel {
+            width: 280px;
+            background: #111114;
+            border-left: 1px solid rgba(232, 224, 212, 0.06);
+            padding: 16px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .right-panel h4 {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #5a5a60;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .right-panel h4:first-child { margin-top: 0; }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            font-size: 11px;
+            color: #8B7D6B;
+        }
+
+        .progress-item.done { color: #4CAF50; }
+        .progress-item.wip { color: #E94520; }
+
+        .progress-icon {
+            width: 14px;
+            text-align: center;
+            flex-shrink: 0;
+            font-size: 10px;
+        }
+
+        .decision-chip {
+            display: inline-block;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 3px 3px 3px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>DUNE.X</h1>
+            <div class="sub">AGENT WORKSPACE</div>
+        </div>
+
+        <div class="sidebar-section">Working Now</div>
+        <div class="channel selected" data-filter="all">
+            <div class="channel-dot working"></div>
+            <div class="channel-name"># all-teams</div>
+            <div class="channel-badge">28</div>
+        </div>
+
+        <div class="sidebar-section">Agents</div>
+        <div class="channel" data-filter="spatial">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># spatial</div>
+            <div class="channel-status">done</div>
+        </div>
+        <div class="channel" data-filter="film">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># film</div>
+            <div class="channel-status">done</div>
+        </div>
+        <div class="channel" data-filter="product">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># product</div>
+            <div class="channel-status">done</div>
+        </div>
+        <div class="channel" data-filter="ux">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># ux</div>
+            <div class="channel-status">done</div>
+        </div>
+        <div class="channel" data-filter="brand">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># brand</div>
+            <div class="channel-status">done</div>
+        </div>
+
+        <div class="sidebar-section">Management</div>
+        <div class="channel" data-filter="leader">
+            <div class="channel-dot done"></div>
+            <div class="channel-name"># team-leader</div>
+            <div class="channel-status">monitoring</div>
+        </div>
+        <div class="channel" data-filter="system">
+            <div class="channel-dot idle"></div>
+            <div class="channel-name"># web-platform</div>
+            <div class="channel-status">standby</div>
+        </div>
+
+        <div class="sidebar-stats">
+            <div class="mini-stat">
+                <div class="mini-stat-val">0</div>
+                <div class="mini-stat-label">Active</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-val">19</div>
+                <div class="mini-stat-label">Files</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-val">0</div>
+                <div class="mini-stat-label">Pending</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-val">18</div>
+                <div class="mini-stat-label">Done</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CHAT -->
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-channel" id="topbar-title"># all-teams</div>
+            <div class="topbar-desc" id="topbar-desc">All agent activity</div>
+            <div class="topbar-right">
+                <div class="typing-indicator" style="color: #4CAF50;">
+                    <span style="font-size:14px;">&#10003;</span>
+                    Phase 1 complete — 18 files delivered
+                </div>
+            </div>
+        </div>
+
+        <div class="messages" id="messages">
+            <!-- populated by JS -->
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <h4>Decisions</h4>
+        <div class="decision-chip">45s film</div>
+        <div class="decision-chip">Real robots 6F</div>
+        <div class="decision-chip">Optional scan</div>
+        <div class="decision-chip">30m new build</div>
+        <div class="decision-chip">Boot hero</div>
+
+        <h4>Spatial Files</h4>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> floor_program.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> retail_plan.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> materials.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> space_layout.html</div>
+
+        <h4>Film Files</h4>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> storyboard.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> shot_list.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> motion_spec.md</div>
+
+        <h4>Product Files</h4>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> collection_overview.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> terrain_boot.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> transit_shell.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> mission_kit.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> biodata_spec.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> materials_tech.md</div>
+
+        <h4>UX Files</h4>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> journey_map.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> biodata_experience.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> spatial_ux.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> digital_ux.md</div>
+
+        <h4>Brand Files</h4>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> brand_strategy.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> visual_identity.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> color_system.css</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> tone_guide.md</div>
+        <div class="progress-item done"><span class="progress-icon">&#10003;</span> naming_system.md</div>
+    </div>
+
+    <script>
+        const feed = [
+          {t:"10:01",team:"system",name:"System",text:"All 5 decisions confirmed. Teams unblocked.",tag:"DISPATCH"},
+          {t:"10:02",team:"leader",name:"Team Leader",text:"Decisions recorded: <strong>45s film</strong>, <strong>real robotic fabrication</strong>, <strong>optional scan</strong>, <strong>30m new build</strong>, <strong>Terrain Boot hero</strong>. Dispatching all teams now."},
+          {t:"10:02",team:"leader",name:"Team Leader",text:"Independent decisions made:",decision:"1. Departure narrative = emotional architecture, Biodata = functional differentiator (nested, not parallel)\n2. Zero product on 1F-3F — products only on 5F and 6F\n3. No voice-over in film — on-screen text fragments only\n4. Retiring 'Void + Warmth' — all docs align to 'Void + Light Architecture'"},
+          {t:"10:03",team:"leader",name:"Team Leader",text:"All teams — you are cleared to begin writing Phase 1 deliverables. Go."},
+
+          {t:"10:04",team:"spatial",name:"Spatial Design",text:"Starting <code>retail_plan.md</code> — vertical airlock concept. 30m new build, 5m per floor gives us 16.4ft floor-to-floor. That's generous. Enough for compression on 1F and full volume on 5F.",tag:"WRITING"},
+          {t:"10:04",team:"film",name:"Commercial Film",text:"Starting <code>storyboard.md</code> — compressing 7-scene arc into 45 seconds. Structure: SIGNAL (0-7s) → TRANSLATION (7-13s) → FORM (13-19s) → THRESHOLD (19-27s) → BODY (27-35s) → DEPARTURE (35-45s).",tag:"WRITING"},
+          {t:"10:04",team:"product",name:"Product Design",text:"Starting <code>collection_overview.md</code> — DEPARTURE 001 collection. 7 pieces across 3 tiers: TRANSIT (performance), PROTOCOL (basics), SIGNAL (limited). Terrain Boot 01 = TRANSIT tier.",tag:"WRITING"},
+          {t:"10:04",team:"ux",name:"UX Design",text:"Starting <code>journey_map.md</code> — designing two branching paths. Departure Candidate gets full scan on 2F. Experience Tourist skips straight to 3F cafe.",tag:"WRITING"},
+          {t:"10:04",team:"brand",name:"Brand Strategy",text:"Starting <code>tone_guide.md</code> — AI/biodata copy rules. Core principle: describe the <em>result</em>, never the <em>process</em>.",tag:"WRITING"},
+
+          {t:"10:06",team:"spatial",name:"Spatial Design",text:"Key structural insight: 5m floor-to-floor allows ~4m clear ceiling height after slab + services. On 5F, if we expose the structure and remove ceiling finish, we get the full 5m void. The reveal needs that height."},
+          {t:"10:07",team:"spatial",name:"Spatial Design",text:"Designing 6F for real robotic fabrication. Equipment footprint: SLS 3D printer (~1.5m x 1.5m), robotic arm cell (~2m x 2m), quality station. Viewing gallery behind full-height glass wall."},
+
+          {t:"10:08",team:"film",name:"Commercial Film",text:"Terrain Boot is the star. Scene 01 opens on bare feet stepping onto a pressure plate — gait data blooms around them as light trails. No face. Just feet and data."},
+          {t:"10:09",team:"film",name:"Commercial Film",text:"Signal Red (#E94520) appears exactly once: Scene 05, a single glowing point on the boot's heel. One frame of warmth in 45 seconds of void."},
+
+          {t:"10:10",team:"product",name:"Product Design",text:"Writing <code>terrain_boot.md</code> — hero product spec. Computational lattice sole: SLS nylon PA12, density mapped from individual gait pressure data. Left sole and right sole are always different."},
+          {t:"10:11",team:"product",name:"Product Design",text:"Biodata pipeline: pressure-plate treadmill (120s walk + 60s run) → AI generates unique lattice density map per foot → 3D print (3-5 days) → robotic assembly → 6F pickup or ship."},
+
+          {t:"10:12",team:"ux",name:"UX Design",text:"Elevator moment design: 3F lobby has departure board in Söhne Mono — <code>DEPARTURE 05F / STATUS BOARDING</code>. Elevator cab goes full void. Low frequency tone builds. Rim light appears at door edges. Doors open at 1200ms mechanical ease."},
+          {t:"10:13",team:"ux",name:"UX Design",text:"Privacy consent: hand placed on lit surface = ritual threshold act + legal opt-in. No clipboard. No terms wall. Privacy details on card from 1F reception + QR."},
+
+          {t:"10:14",team:"brand",name:"Brand Strategy",text:"Forbidden words locked: innovative, revolutionary, game-changing, cutting-edge, next-gen, personalized, customized, bespoke, luxury, premium. None of these exist in DUNE.X."},
+          {t:"10:15",team:"brand",name:"Brand Strategy",text:"Writing <code>naming_system.md</code> — 3 collection tiers: PROTOCOL (basics), TRANSIT (performance), SIGNAL (limited/biodata-reactive). Word bank organized by register. No adjectives in product names ever."},
+
+          {t:"10:17",team:"spatial",name:"Spatial Design",text:"Writing <code>materials.md</code> — surface palette: blackened hot-rolled steel, dark mineral plaster, poured black resin floors, sand-cast aluminum fixtures. Warmth appears ONLY on 3F — Regolith-toned plaster, ash timber cafe counter."},
+          {t:"10:18",team:"spatial",name:"Spatial Design",text:"Building <code>space_layout.html</code> — interactive floor navigator. Dark UI, click through B1-6F, zone labels, circulation arrows. Vertical core locked to same position every floor."},
+
+          {t:"10:19",team:"film",name:"Commercial Film",text:"Writing <code>shot_list.md</code> — 18 shots across 6 scenes. Zero hard cuts. Every transition is cross-dissolve, light-wipe, or match-dissolve. Light always moves before content."},
+
+          {t:"10:20",team:"product",name:"Product Design",text:"Transit Shell 01 spec: 4-layer adaptive composite. L1: TPU film 0.3mm (transparent shell). L2: 3D-printed lattice (structural). L3: variable-density insulation from thermal map. L4: body interface lining."},
+
+          {t:"10:21",team:"ux",name:"UX Design",text:"Writing <code>spatial_ux.md</code> — wayfinding system: light lines in floors guide forward. Visited floors dim behind you. Sound gradient shifts per floor. Staff escort, never point. One obvious path forward at every transition."},
+
+          {t:"10:22",team:"film",name:"Commercial Film",text:"Writing <code>motion_spec.md</code> — all transitions 800-1200ms mechanical easing. Typography: Monument Extended fades in at 3% opacity, builds to 100% over 1.2s. Sound: subsonic drone, no music, engineered silence."},
+
+          {t:"10:23",team:"leader",name:"Team Leader",text:"All 5 teams actively writing. No cross-team conflicts. Brand team nearing completion on tone_guide.md and naming_system.md — will review before marking done."},
+
+          {t:"10:30",team:"brand",name:"Brand Strategy",text:"<code>tone_guide.md</code> complete — 423 lines. Includes Clinical Poet parameters, AI/biodata copy rules (12-row Do/Don't table), per-team copy rules, 40+ approved vocabulary, 40+ forbidden words, sample copy for all contexts.",tag:"DONE"},
+          {t:"10:31",team:"brand",name:"Brand Strategy",text:"<code>naming_system.md</code> complete — 370 lines. 3 collection tiers (PROTOCOL/TRANSIT/SIGNAL), naming format locked, DEPARTURE 001 mapped: Terrain Boot = SIGNAL tier (the peak), Transit Shell = TRANSIT tier, base layers = PROTOCOL.",tag:"DONE"},
+          {t:"10:32",team:"leader",name:"Team Leader",text:"Brand Strategy team: <strong>COMPLETE.</strong> Both files reviewed — tone_guide.md and naming_system.md are consistent with brand DNA. Notable: Terrain Boot elevated to SIGNAL tier (highest engineering). Approved. 4 teams still writing."},
+
+          {t:"10:38",team:"film",name:"Commercial Film",text:"<code>storyboard.md</code> complete — 6 scenes, 45 seconds. Title: \"SIGNAL\". Opens on bare feet mid-stride, biodata filaments radiate. Ends with figure walking into darkness. Signal Red at 0:36 — 1.2 seconds of warmth.",tag:"DONE"},
+          {t:"10:39",team:"film",name:"Commercial Film",text:"<code>shot_list.md</code> complete — 14 shots. ARRI ALEXA 65, Panavision Ultra Vista anamorphics. 24/48/60/72fps mix. Zero hard cuts. 8 transitions documented. Cutdown structures for 30s and 15s.",tag:"DONE"},
+          {t:"10:40",team:"film",name:"Commercial Film",text:"<code>motion_spec.md</code> complete — 29.6KB. Full VFX pipeline (Houdini → Nuke → DaVinci), sound frequency map across 45s, 27 sound events, 4 named easing curves, 6 delivery formats including Dolby Atmos.",tag:"DONE"},
+          {t:"10:41",team:"leader",name:"Team Leader",text:"Commercial Film team: <strong>COMPLETE.</strong> All 3 files reviewed. The DUNE.X period appearing 120ms after the rest of the wordmark in the endplate — that's a detail worth keeping. Approved. 3 teams still writing."},
+
+          {t:"10:48",team:"spatial",name:"Spatial Design",text:"<code>retail_plan.md</code> complete — 348 lines. \"The Vertical Airlock\" concept. Second-by-second choreography for 1F entry corridor: 15-degree bend eliminates street from view, ceiling jumps 2.4m → 4.2m. 5F reveal breakdown: crushed basalt floor, 3.0m portal ring, temperature drops to 18°C.",tag:"DONE"},
+          {t:"10:49",team:"spatial",name:"Spatial Design",text:"<code>materials.md</code> complete — 353 lines. 10 specified materials with NCS/RAL refs. Color temperature gradient: 2700K on 1F warming up to 5500K on 5F. Acoustic targets per floor. Climate control — 5F deliberately cold (18-19°C, 35% humidity) for the reveal."},
+          {t:"10:50",team:"spatial",name:"Spatial Design",text:"<code>space_layout.html</code> complete — 1,141 lines. Interactive SVG floor plans, floor-by-floor navigation, elevator skip indicator, intensity gradient bar, journey flow diagram. All self-contained, no dependencies.",tag:"DONE"},
+          {t:"10:51",team:"leader",name:"Team Leader",text:"Spatial Design team: <strong>COMPLETE.</strong> All 3 files reviewed. Highlights: the 15-degree corridor bend on 1F is strong — physically eliminates the city. The 5F temperature drop to 18°C is theatrical and correct. The space_layout.html is ready for user review. Approved. Next step: user provides facade/interior refs for Blender MCP. 2 teams still writing."},
+
+          {t:"10:55",team:"product",name:"Product Design",text:"<code>collection_overview.md</code> complete. DEPARTURE 001: 7 pieces, 4-phase drop strategy (TEASE → REVEAL → SYSTEM → FLAGSHIP). Price range $140-$840.",tag:"DONE"},
+          {t:"10:56",team:"product",name:"Product Design",text:"<code>terrain_boot.md</code> complete — 16.7KB hero spec. SLS lattice sole: 2,400-3,800 gyroid cells per shoe, left/right always different. Weight target: 340-380g. Digital embryo stored in customer profile for future rescans.",tag:"DONE"},
+          {t:"10:57",team:"product",name:"Product Design",text:"<code>transit_shell.md</code> complete — 16.6KB. 23 RF-welded panels, zero thread in the entire garment. Collar: 85mm, asymmetric, 12-degree taper for helmet neck ring. Insulation: 4-12mm mapped from thermal data.",tag:"DONE"},
+          {t:"10:58",team:"product",name:"Product Design",text:"<code>mission_kit.md</code> complete — Transit Pack (20L, 12 faceted panels), Visor (38g, single-piece flex, no hinges), Specimen Container (holds Terrain Boot). Cross-product compatibility table included.",tag:"DONE"},
+          {t:"10:59",team:"product",name:"Product Design",text:"<code>biodata_spec.md</code> complete — 19.6KB. 7 data categories, ~2.5GB raw per customer, 13-step scan protocol, 10 min total. Privacy: AES-256, 90-day auto-delete, one-click permanent deletion.",tag:"DONE"},
+          {t:"11:00",team:"product",name:"Product Design",text:"<code>materials_tech.md</code> complete — 9 materials with full property tables. 6F layout: 9 stations, 2 SLS printers, 2 technicians, 6-8 custom products per day. TPU powder 40% recycled per build.",tag:"DONE"},
+          {t:"11:01",team:"leader",name:"Team Leader",text:"Product Design team: <strong>COMPLETE.</strong> 6 files reviewed. The Terrain Boot spec is production-grade — 2,400-3,800 gyroid cells, weight under 400g, digital embryo concept is strong. 6F manufacturing layout: 6-8 custom products/day is realistic for the floor plate. Approved. 1 team remaining: UX."},
+
+          {t:"11:08",team:"ux",name:"UX Design",text:"<code>journey_map.md</code> complete. 22 touchpoints mapped across dual persona paths. Elevator moment: 42-second second-by-second breakdown. Post-purchase: SpaceX-style manufacturing tracker with Clinical Poet status updates.",tag:"DONE"},
+          {t:"11:09",team:"ux",name:"UX Design",text:"<code>biodata_experience.md</code> complete. 2F scanning: 3m circular platform heated to 28°C, 270-degree 4K visualization wall. 4-minute scan sequence: orientation → movement choreography → stillness → body signal reveal. Privacy: kinesthetic hand-on-glass consent.",tag:"DONE"},
+          {t:"11:10",team:"ux",name:"UX Design",text:"<code>spatial_ux.md</code> complete. 4 wayfinding channels (light, sound, staff, architecture). 6F handoff: piece on heated tray at 28°C — same temperature as scan platform and elevator floor. Sensory continuity. Staff says only: \"Your piece.\"",tag:"DONE"},
+          {t:"11:11",team:"ux",name:"UX Design",text:"<code>digital_ux.md</code> complete. Website entry: 6-second choreographed reveal. Product page template. Manufacturing tracker wireframe. Mobile in-store: phone goes completely black inside the elevator. Full microcopy guide.",tag:"DONE"},
+          {t:"11:12",team:"leader",name:"Team Leader",text:"UX Design team: <strong>COMPLETE.</strong> All 4 files reviewed. The 28°C temperature continuity across scan platform, elevator floor, and handoff tray is a brilliant sensory through-line. The phone going black in the elevator — correct. Approved."},
+          {t:"11:13",team:"leader",name:"Team Leader",text:"<strong>ALL 5 TEAMS: PHASE 1 COMPLETE.</strong> 18 files delivered across brand, film, spatial, product, and UX. Zero cross-team conflicts. All files reviewed and approved. Ready for user review."},
+          {t:"11:14",team:"leader",name:"Team Leader",text:"Next steps pending user direction: 1) Review deliverables. 2) Provide facade/interior reference images for Blender MCP. 3) Spatial team moves to Phase 2 (3D modeling). 4) Web team can begin Phase 2 with product pages using the new specs."},
+        ];
+
+        // Render messages
+        const container = document.getElementById('messages');
+        let currentFilter = 'all';
+
+        function renderMessages(filter) {
+            const filtered = filter === 'all' ? feed : feed.filter(m => m.team === filter);
+            container.innerHTML = '';
+
+            // Day divider
+            const divider = document.createElement('div');
+            divider.className = 'day-divider';
+            divider.innerHTML = '<span>Today</span>';
+            container.appendChild(divider);
+
+            let lastTeam = '';
+            filtered.forEach(m => {
+                const div = document.createElement('div');
+                const isSame = m.team === lastTeam;
+                div.className = 'msg' + (isSame ? ' msg-same' : '');
+
+                const avatarLabel = {
+                    spatial:'SP', film:'FM', product:'PR', ux:'UX', brand:'BR', leader:'TL', system:'SY'
+                }[m.team] || '??';
+
+                let content = `<div class="msg-text">${m.text}</div>`;
+                if (m.decision) {
+                    content += `<div class="msg-decision">${m.decision.replace(/\n/g,'<br>')}</div>`;
+                }
+                if (m.tag) {
+                    content = `<div class="msg-header">
+                        <span class="msg-name ${m.team}">${m.name}</span>
+                        <span class="msg-tag">${m.tag}</span>
+                        <span class="msg-time">${m.t}</span>
+                    </div>${content}`;
+                } else {
+                    content = `<div class="msg-header">
+                        <span class="msg-name ${m.team}">${m.name}</span>
+                        <span class="msg-time">${m.t}</span>
+                    </div>${content}`;
+                }
+
+                div.innerHTML = `
+                    ${!isSame ? `<div class="msg-avatar ${m.team}">${avatarLabel}</div>` : '<div style="width:32px;flex-shrink:0"></div>'}
+                    <div class="msg-body">${content}</div>
+                `;
+
+                container.appendChild(div);
+                lastTeam = m.team;
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        renderMessages('all');
+
+        // Channel click filtering
+        document.querySelectorAll('.channel').forEach(ch => {
+            ch.addEventListener('click', () => {
+                document.querySelectorAll('.channel').forEach(c => c.classList.remove('selected'));
+                ch.classList.add('selected');
+                const filter = ch.dataset.filter;
+                currentFilter = filter;
+                document.getElementById('topbar-title').textContent = '# ' + (filter === 'all' ? 'all-teams' : filter);
+                const descs = {
+                    all:'All agent activity',
+                    spatial:'Retail plan, materials, floor layouts',
+                    film:'Storyboard, shot list, motion spec',
+                    product:'Collection, terrain boot, transit shell, biodata',
+                    ux:'Journey map, biodata experience, wayfinding',
+                    brand:'Tone guide, naming system',
+                    leader:'Team coordination and approvals',
+                    system:'Web platform — standby'
+                };
+                document.getElementById('topbar-desc').textContent = descs[filter] || '';
+                renderMessages(filter);
+            });
+        });
+    </script>
+
+</body>
+</html>

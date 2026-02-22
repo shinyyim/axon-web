@@ -1,0 +1,10 @@
+[
+  {"time":"00:00","team":"SYSTEM","text":"All 5 decisions confirmed. Teams unblocked."},
+  {"time":"00:01","team":"TEAM LEADER","text":"Dispatching all teams to begin Phase 1 deliverables. Spatial, Film, Product, UX, Brand — go."},
+  {"time":"00:02","team":"SPATIAL","text":"Starting retail_plan.md — building is 30m new build, 5m/floor, real robotic fabrication on 6F."},
+  {"time":"00:02","team":"FILM","text":"Starting storyboard.md — 45s master cut, 7 scenes, Terrain Boot hero."},
+  {"time":"00:02","team":"PRODUCT","text":"Starting collection_overview.md + biodata_spec.md — Terrain Boot 01 is hero, 7-piece lineup."},
+  {"time":"00:02","team":"UX","text":"Starting journey_map.md — biodata scan is optional, designing branching path."},
+  {"time":"00:02","team":"BRAND","text":"Starting tone_guide.md + naming_system.md — AI/biodata copy rules + DEPARTURE 001 structure."},
+  {"time":"00:03","team":"TEAM LEADER","text":"All teams active. Monitoring for cross-team dependencies."}
+]

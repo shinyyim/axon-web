@@ -1,0 +1,91 @@
+/* ============================================
+   DUNE.X — Color System
+   "Future your Performance."
+   ============================================ */
+
+:root {
+    /* ---- Primary Palette ---- */
+    /* Void: The darkness of transit */
+    --dx-void: #0A0A0C;
+    --dx-void-rgb: 10, 10, 12;
+
+    /* Regolith: Mars surface dust */
+    --dx-regolith: #C4A882;
+    --dx-regolith-rgb: 196, 168, 130;
+
+    /* Bone: Raw material, light neutral */
+    --dx-bone: #E8E0D4;
+    --dx-bone-rgb: 232, 224, 212;
+
+    /* Signal: Human warmth in void */
+    --dx-signal: #E94520;
+    --dx-signal-rgb: 233, 69, 32;
+
+    /* ---- Secondary Palette ---- */
+    /* Haze: Dark surface, cards */
+    --dx-haze: #2A2A30;
+    --dx-haze-rgb: 42, 42, 48;
+
+    /* Dust: Muted earth, secondary text */
+    --dx-dust: #8B7D6B;
+    --dx-dust-rgb: 139, 125, 107;
+
+    /* Membrane: Elevated surface */
+    --dx-membrane: #1E1E24;
+    --dx-membrane-rgb: 30, 30, 36;
+
+    /* Atmosphere: Off-white for light contexts */
+    --dx-atmosphere: #F5F0E8;
+    --dx-atmosphere-rgb: 245, 240, 232;
+
+    /* ---- Semantic Tokens ---- */
+    --dx-bg-primary: var(--dx-void);
+    --dx-bg-surface: var(--dx-membrane);
+    --dx-bg-elevated: var(--dx-haze);
+    --dx-bg-light: var(--dx-atmosphere);
+
+    --dx-text-primary: var(--dx-bone);
+    --dx-text-secondary: var(--dx-dust);
+    --dx-text-inverse: var(--dx-void);
+    --dx-text-accent: var(--dx-signal);
+
+    --dx-border-subtle: rgba(232, 224, 212, 0.08);
+    --dx-border-default: rgba(232, 224, 212, 0.15);
+    --dx-border-strong: rgba(232, 224, 212, 0.30);
+
+    /* ---- Spacing (8px base) ---- */
+    --dx-space-1: 0.5rem;
+    /* 8px */
+    --dx-space-2: 1rem;
+    /* 16px */
+    --dx-space-3: 1.5rem;
+    /* 24px */
+    --dx-space-4: 2rem;
+    /* 32px */
+    --dx-space-6: 3rem;
+    /* 48px */
+    --dx-space-8: 4rem;
+    /* 64px */
+    --dx-space-12: 6rem;
+    /* 96px */
+    --dx-space-16: 8rem;
+    /* 128px */
+    --dx-space-24: 12rem;
+    /* 192px */
+
+    /* ---- Typography ---- */
+    --dx-font-display: 'Monument Extended', 'Neue Montreal', 'Inter', sans-serif;
+    --dx-font-body: 'Neue Montreal', 'Inter', 'Outfit', sans-serif;
+    --dx-font-mono: 'Söhne Mono', 'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+    /* ---- Motion ---- */
+    --dx-ease-mechanical: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    --dx-duration-reveal: 1000ms;
+    --dx-duration-transition: 600ms;
+    --dx-duration-micro: 200ms;
+
+    /* ---- Elevation ---- */
+    --dx-shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --dx-shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --dx-shadow-dramatic: 0 12px 48px rgba(0, 0, 0, 0.8);
+}

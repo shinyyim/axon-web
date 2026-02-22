@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE.X Flagship — Complete Spatial Package</title>
+    <style>
+        :root {
+            --dx-void: #0A0A0C;
+            --dx-bone: #E8E0D4;
+            --dx-signal: #E94520;
+            --dx-haze: #2A2A30;
+            --dx-dust: #8B7D6B;
+            --dx-membrane: #1E1E24;
+            --dx-atmosphere: #F5F0E8;
+            --dx-regolith: #C4A882;
+            --dx-portal-white: #FFFFFF;
+            --dx-cold-glow: #D0D8E8;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--dx-void);
+            color: var(--dx-bone);
+            font-family: 'Söhne Mono', 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .brand-name {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--dx-bone);
+            margin-bottom: 6px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--dx-bone);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            color: var(--dx-dust);
+            font-size: 11px;
+            letter-spacing: 1px;
+            max-width: 520px;
+        }
+
+        /* ── Main Tabs ── */
+        .main-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(232,224,212,0.06);
+            padding-bottom: 0;
+        }
+
+        .main-tab {
+            padding: 10px 20px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: transparent;
+            color: var(--dx-dust);
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .main-tab:hover {
+            color: var(--dx-bone);
+        }
+
+        .main-tab.active {
+            color: var(--dx-signal);
+            border-bottom-color: var(--dx-signal);
+        }
+
+        /* ── Views ── */
+        .view-panel { display: none; }
+        .view-panel.active { display: block; }
+
+        /* ── FLOOR PLANS VIEW ── */
+        .floor-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 48px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .floor-layout { grid-template-columns: 1fr; }
+        }
+
+        .building-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dx-dust);
+            margin-bottom: 16px;
+        }
+
+        .floor-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .floor-btn {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: var(--dx-membrane);
+            border: 1px solid rgba(232,224,212,0.04);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            position: relative;
+        }
+
+        .floor-btn::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: transparent;
+            transition: background 0.4s;
+        }
+
+        .floor-btn:hover { background: var(--dx-haze); border-color: rgba(232,224,212,0.08); }
+        .floor-btn:hover::before { background: var(--dx-dust); }
+        .floor-btn.active { background: var(--dx-haze); border-color: rgba(232,224,212,0.12); }
+        .floor-btn.active::before { background: var(--dx-bone); }
+        .floor-btn.active .floor-id { color: var(--dx-bone); }
+
+        .floor-id {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--dx-dust);
+            transition: color 0.4s;
+        }
+
+        .floor-name { font-size: 12px; color: var(--dx-bone); letter-spacing: 0.5px; }
+        .floor-area { font-size: 10px; color: var(--dx-dust); letter-spacing: 1px; }
+
+        .elevator-skip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 20px;
+            margin: 2px 0;
+        }
+
+        .skip-line { width: 48px; display: flex; justify-content: center; }
+        .skip-line-inner {
+            width: 1px; height: 28px;
+            background: repeating-linear-gradient(to bottom, var(--dx-signal) 0px, var(--dx-signal) 3px, transparent 3px, transparent 6px);
+        }
+
+        .skip-text { font-size: 10px; color: var(--dx-signal); letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Detail Panel */
+        .detail-panel { position: sticky; top: 48px; }
+
+        .detail-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(232,224,212,0.08); }
+        .detail-floor-id { font-size: 32px; font-weight: 800; letter-spacing: 3px; color: var(--dx-bone); margin-bottom: 4px; }
+        .detail-floor-name { font-size: 14px; color: var(--dx-dust); letter-spacing: 1px; margin-bottom: 4px; }
+        .detail-floor-elevation { font-size: 10px; color: var(--dx-dust); letter-spacing: 2px; text-transform: uppercase; }
+
+        .plan-container {
+            width: 100%; aspect-ratio: 1;
+            background: var(--dx-membrane);
+            border: 1px solid rgba(232,224,212,0.06);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .plan-container svg { width: 100%; height: 100%; }
+
+        .zone-label { font-family: inherit; font-size: 8px; fill: var(--dx-bone); letter-spacing: 1px; text-transform: uppercase; }
+        .zone-label-small { font-family: inherit; font-size: 6.5px; fill: var(--dx-dust); letter-spacing: 0.5px; }
+        .zone-area-text { font-family: inherit; font-size: 6px; fill: var(--dx-dust); letter-spacing: 0.5px; }
+
+        .zone-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+        .zone-item { display: grid; grid-template-columns: 8px 1fr auto; align-items: start; gap: 10px; font-size: 11px; }
+        .zone-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
+        .zone-item-name { color: var(--dx-bone); }
+        .zone-item-area { color: var(--dx-dust); font-size: 10px; }
+
+        .spatial-notes { padding-top: 16px; border-top: 1px solid rgba(232,224,212,0.06); }
+        .spatial-notes-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dx-dust); margin-bottom: 8px; }
+        .spatial-note { font-size: 11px; color: var(--dx-dust); line-height: 1.6; margin-bottom: 6px; }
+        .spatial-note em { color: var(--dx-bone); font-style: normal; }
+
+        /* Intensity + Journey */
+        .intensity-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(232,224,212,0.06); }
+        .intensity-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--dx-dust); margin-bottom: 16px; }
+        .intensity-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; height: 32px; margin-bottom: 8px; }
+        .intensity-segment {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; letter-spacing: 1px; color: var(--dx-void); font-weight: 600;
+        }
+        .intensity-segment.level-1 { background: rgba(232,224,212,0.08); color: var(--dx-dust); }
+        .intensity-segment.level-2 { background: rgba(232,224,212,0.15); color: var(--dx-dust); }
+        .intensity-segment.level-3 { background: rgba(232,224,212,0.22); color: var(--dx-dust); }
+        .intensity-segment.level-4 { background: rgba(232,224,212,0.06); color: rgba(232,224,212,0.3); }
+        .intensity-segment.level-5 { background: rgba(232,224,212,0.55); color: var(--dx-void); }
+        .intensity-segment.level-6 { background: rgba(232,224,212,0.45); color: var(--dx-void); }
+        .intensity-segment.level-event { background: rgba(233,69,32,0.2); color: var(--dx-signal); }
+        .intensity-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .intensity-floor-label { font-size: 9px; color: var(--dx-dust); text-align: center; letter-spacing: 1px; }
+
+        .journey-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(232,224,212,0.06); }
+        .journey-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--dx-dust); margin-bottom: 16px; }
+        .journey-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 11px; }
+        .journey-node {
+            padding: 4px 10px; background: var(--dx-membrane);
+            border: 1px solid rgba(232,224,212,0.08); color: var(--dx-bone);
+            letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s;
+        }
+        .journey-node:hover { border-color: rgba(232,224,212,0.2); }
+        .journey-node.active { border-color: var(--dx-bone); }
+        .journey-node.skip { border-color: rgba(233,69,32,0.3); color: var(--dx-signal); border-style: dashed; }
+        .journey-arrow { color: var(--dx-dust); font-size: 10px; }
+        .journey-arrow.down { color: var(--dx-signal); }
+
+        /* ── ELEVATION / SECTION / AREA VIEWS ── */
+        .drawing-layout {
+            display: flex;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .drawing-layout { flex-direction: column; }
+        }
+
+        .drawing-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .drawing-area svg { max-width: 100%; height: auto; }
+
+        .info-panel {
+            width: 300px;
+            flex-shrink: 0;
+        }
+
+        .info-panel h3 {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--dx-dust);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+        .info-panel h3:first-child { margin-top: 0; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(232,224,212,0.04);
+            font-size: 11px;
+        }
+        .info-row .label { color: var(--dx-dust); }
+        .info-row .value { color: var(--dx-bone); font-weight: 500; font-size: 11px; }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid rgba(232,224,212,0.12);
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .total-row .value { color: var(--dx-signal); }
+
+        .info-note {
+            font-size: 11px;
+            color: rgba(232,224,212,0.35);
+            line-height: 1.6;
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(232,224,212,0.02);
+            border-left: 2px solid rgba(232,224,212,0.08);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--dx-dust); }
+        .legend-swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(232,224,212,0.04);
+            font-size: 10px;
+            color: rgba(232,224,212,0.25);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="brand-name">DUNE.X</div>
+        <div class="page-title">FLAGSHIP SPATIAL PACKAGE</div>
+        <div class="page-subtitle">Vertical airlock. Seven levels. 30m from street to departure. Floor plans, elevation, section, and area summary.</div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="main-tabs">
+        <button class="main-tab active" onclick="switchView('plans')">Floor Plans</button>
+        <button class="main-tab" onclick="switchView('elevation')">Elevation</button>
+        <button class="main-tab" onclick="switchView('section')">Section</button>
+        <button class="main-tab" onclick="switchView('area')">Area Summary</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: FLOOR PLANS                        -->
+    <!-- ========================================== -->
+    <div class="view-panel active" id="view-plans">
+        <div class="floor-layout">
+            <div>
+                <div class="building-label">Building Section</div>
+                <div class="floor-stack">
+                    <div class="floor-btn active" data-floor="6F" onclick="selectFloor('6F')">
+                        <span class="floor-id">6F</span>
+                        <span class="floor-name">Manufacturing</span>
+                        <span class="floor-area">370 sqft / +25.0m</span>
+                    </div>
+                    <div class="floor-btn" data-floor="5F" onclick="selectFloor('5F')">
+                        <span class="floor-id">5F</span>
+                        <span class="floor-name">The Reveal</span>
+                        <span class="floor-area">370 sqft / +20.0m</span>
+                    </div>
+                    <div class="elevator-skip">
+                        <div class="skip-line"><div class="skip-line-inner"></div></div>
+                        <span class="skip-text">Elevator skips 4F on ascent</span>
+                    </div>
+                    <div class="floor-btn" data-floor="4F" onclick="selectFloor('4F')">
+                        <span class="floor-id">4F</span>
+                        <span class="floor-name">Checkout</span>
+                        <span class="floor-area">370 sqft / +15.0m</span>
+                    </div>
+                    <div class="floor-btn" data-floor="3F" onclick="selectFloor('3F')">
+                        <span class="floor-id">3F</span>
+                        <span class="floor-name">Cafe & Gathering</span>
+                        <span class="floor-area">370 sqft / +10.0m</span>
+                    </div>
+                    <div class="floor-btn" data-floor="2F" onclick="selectFloor('2F')">
+                        <span class="floor-id">2F</span>
+                        <span class="floor-name">Experience Zone</span>
+                        <span class="floor-area">370 sqft / +5.0m</span>
+                    </div>
+                    <div class="floor-btn" data-floor="1F" onclick="selectFloor('1F')">
+                        <span class="floor-id">1F</span>
+                        <span class="floor-name">Arrival</span>
+                        <span class="floor-area">370 sqft / 0.0m</span>
+                    </div>
+                    <div class="floor-btn" data-floor="B1" onclick="selectFloor('B1')">
+                        <span class="floor-id">B1</span>
+                        <span class="floor-name">Event Floor</span>
+                        <span class="floor-area">370 sqft / -5.0m</span>
+                    </div>
+                </div>
+
+                <!-- Intensity -->
+                <div class="intensity-section">
+                    <div class="intensity-label">Conceptual Intensity</div>
+                    <div class="intensity-bar">
+                        <div class="intensity-segment level-event">VAR</div>
+                        <div class="intensity-segment level-2"></div>
+                        <div class="intensity-segment level-3"></div>
+                        <div class="intensity-segment level-2"></div>
+                        <div class="intensity-segment level-4"></div>
+                        <div class="intensity-segment level-5"></div>
+                        <div class="intensity-segment level-6"></div>
+                    </div>
+                    <div class="intensity-labels">
+                        <div class="intensity-floor-label">B1</div>
+                        <div class="intensity-floor-label">1F</div>
+                        <div class="intensity-floor-label">2F</div>
+                        <div class="intensity-floor-label">3F</div>
+                        <div class="intensity-floor-label">4F</div>
+                        <div class="intensity-floor-label">5F</div>
+                        <div class="intensity-floor-label">6F</div>
+                    </div>
+                </div>
+
+                <!-- Journey -->
+                <div class="journey-section">
+                    <div class="journey-label">Customer Journey</div>
+                    <div class="journey-flow">
+                        <span class="journey-node" data-floor="1F" onclick="selectFloor('1F')">1F Entry</span>
+                        <span class="journey-arrow">&rarr;</span>
+                        <span class="journey-node" data-floor="2F" onclick="selectFloor('2F')">2F Experience</span>
+                        <span class="journey-arrow">&rarr;</span>
+                        <span class="journey-node" data-floor="3F" onclick="selectFloor('3F')">3F Cafe</span>
+                        <span class="journey-arrow down">&darr; elevator</span>
+                        <span class="journey-node skip" data-floor="4F" onclick="selectFloor('4F')">4F skip</span>
+                        <span class="journey-arrow down">&darr;</span>
+                        <span class="journey-node" data-floor="5F" onclick="selectFloor('5F')">5F Reveal</span>
+                        <span class="journey-arrow">&rarr;</span>
+                        <span class="journey-node" data-floor="6F" onclick="selectFloor('6F')">6F Fabrication</span>
+                        <span class="journey-arrow down">&darr; descend</span>
+                        <span class="journey-node" data-floor="4F" onclick="selectFloor('4F')">4F Checkout</span>
+                        <span class="journey-arrow">&rarr;</span>
+                        <span class="journey-node" data-floor="1F" onclick="selectFloor('1F')">1F Exit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-panel" id="detailPanel"></div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: ELEVATION                          -->
+    <!-- ========================================== -->
+    <div class="view-panel" id="view-elevation">
+        <div class="drawing-layout">
+            <div class="drawing-area">
+                <svg viewBox="0 0 400 700" width="400" height="700" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="700" fill="#0A0A0C"/>
+                    <!-- Ground -->
+                    <line x1="40" y1="530" x2="360" y2="530" stroke="#8B7D6B" stroke-width="1.5" stroke-dasharray="8,4"/>
+                    <text x="370" y="534" fill="#5a5a60" font-size="8" font-family="monospace">GL ±0.0m</text>
+                    <!-- Building outline -->
+                    <rect x="100" y="30" width="200" height="500" fill="none" stroke="#E8E0D4" stroke-width="1.5"/>
+                    <!-- Basement -->
+                    <rect x="100" y="530" width="200" height="100" fill="none" stroke="#E8E0D4" stroke-width="1.5" stroke-dasharray="4,4"/>
+                    <!-- Floor slabs -->
+                    <line x1="100" y1="630" x2="300" y2="630" stroke="#4a4a50" stroke-width="1"/>
+                    <line x1="100" y1="530" x2="300" y2="530" stroke="#E8E0D4" stroke-width="2"/>
+                    <line x1="100" y1="430" x2="300" y2="430" stroke="#4a4a50" stroke-width="1"/>
+                    <line x1="100" y1="330" x2="300" y2="330" stroke="#4a4a50" stroke-width="1"/>
+                    <line x1="100" y1="230" x2="300" y2="230" stroke="#4a4a50" stroke-width="1"/>
+                    <line x1="100" y1="130" x2="300" y2="130" stroke="#4a4a50" stroke-width="1"/>
+                    <line x1="100" y1="30" x2="300" y2="30" stroke="#4a4a50" stroke-width="1"/>
+                    <!-- Facade -->
+                    <!-- 1F Entry -->
+                    <rect x="170" y="480" width="60" height="50" fill="none" stroke="#E94520" stroke-width="1"/>
+                    <text x="200" y="510" fill="#E94520" font-size="7" font-family="monospace" text-anchor="middle">ENTRY</text>
+                    <!-- 2F Opaque -->
+                    <rect x="110" y="440" width="180" height="80" fill="#111114" stroke="#2A2A30" stroke-width="0.5"/>
+                    <text x="200" y="485" fill="#2A2A30" font-size="7" font-family="monospace" text-anchor="middle">OPAQUE</text>
+                    <!-- 3F Light slot -->
+                    <rect x="120" y="350" width="160" height="6" fill="none" stroke="#C4A882" stroke-width="0.8"/>
+                    <!-- 4F Opaque -->
+                    <rect x="110" y="240" width="180" height="80" fill="#111114" stroke="#2A2A30" stroke-width="0.5"/>
+                    <!-- 5F Portal ring -->
+                    <circle cx="200" cy="180" r="30" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.6"/>
+                    <circle cx="200" cy="180" r="28" fill="none" stroke="#FFFFFF" stroke-width="0.3" opacity="0.3"/>
+                    <!-- 6F Glass wall -->
+                    <rect x="120" y="45" width="160" height="75" fill="none" stroke="#E8E0D4" stroke-width="0.5"/>
+                    <line x1="140" y1="45" x2="140" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="160" y1="45" x2="160" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="180" y1="45" x2="180" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="200" y1="45" x2="200" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="220" y1="45" x2="220" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="240" y1="45" x2="240" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <line x1="260" y1="45" x2="260" y2="120" stroke="#2A2A30" stroke-width="0.3"/>
+                    <!-- Wordmark -->
+                    <text x="200" y="475" fill="#E8E0D4" font-size="10" font-family="monospace" font-weight="700" letter-spacing="4" text-anchor="middle">DUNE.X</text>
+                    <!-- Floor labels -->
+                    <text x="315" y="585" fill="#5a5a60" font-size="9" font-family="monospace">B1</text>
+                    <text x="315" y="485" fill="#E8E0D4" font-size="9" font-family="monospace">1F</text>
+                    <text x="315" y="385" fill="#5a5a60" font-size="9" font-family="monospace">2F</text>
+                    <text x="315" y="285" fill="#5a5a60" font-size="9" font-family="monospace">3F</text>
+                    <text x="315" y="185" fill="#5a5a60" font-size="9" font-family="monospace">4F</text>
+                    <text x="315" y="85" fill="#5a5a60" font-size="9" font-family="monospace">5F</text>
+                    <text x="315" y="35" fill="#5a5a60" font-size="9" font-family="monospace">6F</text>
+                    <!-- Floor names -->
+                    <text x="335" y="585" fill="#5a5a60" font-size="7" font-family="sans-serif">EVENT</text>
+                    <text x="335" y="485" fill="#E94520" font-size="7" font-family="sans-serif">ARRIVAL</text>
+                    <text x="335" y="385" fill="#5a5a60" font-size="7" font-family="sans-serif">EXPERIENCE</text>
+                    <text x="335" y="285" fill="#C4A882" font-size="7" font-family="sans-serif">CAFE</text>
+                    <text x="335" y="185" fill="#5a5a60" font-size="7" font-family="sans-serif">CHECKOUT</text>
+                    <text x="335" y="85" fill="#FFFFFF" font-size="7" font-family="sans-serif">REVEAL</text>
+                    <text x="335" y="35" fill="#5a5a60" font-size="7" font-family="sans-serif">MFG</text>
+                    <!-- Dimensions -->
+                    <line x1="60" y1="30" x2="60" y2="630" stroke="#4a4a50" stroke-width="0.5"/>
+                    <line x1="55" y1="30" x2="65" y2="30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <line x1="55" y1="630" x2="65" y2="630" stroke="#4a4a50" stroke-width="0.5"/>
+                    <text x="58" y="335" fill="#8B7D6B" font-size="8" font-family="monospace" text-anchor="middle" transform="rotate(-90,58,335)">35.0m TOTAL</text>
+                    <line x1="80" y1="530" x2="80" y2="430" stroke="#2A2A30" stroke-width="0.5"/>
+                    <text x="88" y="483" fill="#4a4a50" font-size="7" font-family="monospace" transform="rotate(-90,88,483)">5.0m</text>
+                    <!-- Elevation markers -->
+                    <text x="42" y="634" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">-5.0m</text>
+                    <text x="42" y="534" fill="#8B7D6B" font-size="7" font-family="monospace" text-anchor="end">±0.0m</text>
+                    <text x="42" y="434" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+5.0m</text>
+                    <text x="42" y="334" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+10.0m</text>
+                    <text x="42" y="234" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+15.0m</text>
+                    <text x="42" y="134" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+20.0m</text>
+                    <text x="42" y="34" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+25.0m</text>
+                    <!-- Roof -->
+                    <line x1="95" y1="30" x2="305" y2="30" stroke="#E8E0D4" stroke-width="2"/>
+                    <text x="42" y="24" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+30.0m</text>
+                    <line x1="95" y1="20" x2="305" y2="20" stroke="#4a4a50" stroke-width="0.5"/>
+                    <line x1="100" y1="20" x2="100" y2="30" stroke="#E8E0D4" stroke-width="1.5"/>
+                    <line x1="300" y1="20" x2="300" y2="30" stroke="#E8E0D4" stroke-width="1.5"/>
+                    <!-- Title -->
+                    <text x="200" y="670" fill="#8B7D6B" font-size="9" font-family="monospace" letter-spacing="3" text-anchor="middle">FRONT ELEVATION — SCALE NTS</text>
+                    <text x="200" y="685" fill="#5a5a60" font-size="7" font-family="monospace" text-anchor="middle">BLACKENED STEEL + DARK MINERAL PLASTER FACADE</text>
+                </svg>
+            </div>
+
+            <div class="info-panel">
+                <h3>Building Dimensions</h3>
+                <div class="info-row"><span class="label">Total Height</span><span class="value">30.0m (roof)</span></div>
+                <div class="info-row"><span class="label">Parapet</span><span class="value">+31.0m</span></div>
+                <div class="info-row"><span class="label">Basement Depth</span><span class="value">-5.0m</span></div>
+                <div class="info-row"><span class="label">Overall</span><span class="value">35.0m (7 levels)</span></div>
+                <div class="info-row"><span class="label">Floor-to-Floor</span><span class="value">5.0m (16.4 ft)</span></div>
+                <div class="info-row"><span class="label">Clear Ceiling</span><span class="value">~4.0m typical</span></div>
+                <div class="info-row"><span class="label">Footprint</span><span class="value">~5.8m x 5.8m</span></div>
+                <div class="info-row"><span class="label">Construction</span><span class="value">New build</span></div>
+
+                <h3>Facade Treatment</h3>
+                <div class="info-row"><span class="label">Primary</span><span class="value">Blackened steel</span></div>
+                <div class="info-row"><span class="label">Secondary</span><span class="value">Dark mineral plaster</span></div>
+                <div class="info-row"><span class="label">1F Entry</span><span class="value">Signal Red frame</span></div>
+                <div class="info-row"><span class="label">3F</span><span class="value">Narrow light slot</span></div>
+                <div class="info-row"><span class="label">5F</span><span class="value">Portal ring glow</span></div>
+                <div class="info-row"><span class="label">6F</span><span class="value">Full glass wall</span></div>
+
+                <div class="info-note">The facade is deliberately opaque — a dark monolith on the street. Light only escapes at three points: the 1F entry slit, the 3F cafe slot, and the 5F portal ring. The 6F glass wall reveals the manufacturing theater to the street at night.</div>
+
+                <h3>Legend</h3>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-swatch" style="background:#E94520;"></div>Entry</div>
+                    <div class="legend-item"><div class="legend-swatch" style="background:#C4A882;"></div>Warmth (3F)</div>
+                    <div class="legend-item"><div class="legend-swatch" style="background:#FFFFFF; opacity:0.6;"></div>Portal Light</div>
+                    <div class="legend-item"><div class="legend-swatch" style="background:#111114; border:1px solid #2A2A30;"></div>Opaque</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: SECTION                            -->
+    <!-- ========================================== -->
+    <div class="view-panel" id="view-section">
+        <div class="drawing-layout">
+            <div class="drawing-area">
+                <svg viewBox="0 0 500 700" width="500" height="700" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="500" height="700" fill="#0A0A0C"/>
+                    <line x1="40" y1="530" x2="460" y2="530" stroke="#8B7D6B" stroke-width="1.5" stroke-dasharray="8,4"/>
+                    <!-- Building section -->
+                    <rect x="100" y="30" width="280" height="600" fill="none" stroke="#E8E0D4" stroke-width="1.5"/>
+                    <!-- Floor slabs -->
+                    <rect x="100" y="526" width="280" height="8" fill="#2A2A30" stroke="#E8E0D4" stroke-width="0.5"/>
+                    <rect x="100" y="426" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <rect x="100" y="326" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <rect x="100" y="226" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <rect x="100" y="126" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <rect x="100" y="26" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <rect x="100" y="626" width="280" height="8" fill="#2A2A30" stroke="#4a4a50" stroke-width="0.5"/>
+                    <!-- Vertical Core -->
+                    <rect x="330" y="30" width="50" height="604" fill="none" stroke="#E94520" stroke-width="0.8" stroke-dasharray="3,3"/>
+                    <text x="355" y="340" fill="#E94520" font-size="7" font-family="monospace" text-anchor="middle" transform="rotate(-90,355,340)">VERTICAL CORE</text>
+                    <!-- Elevator shaft -->
+                    <rect x="335" y="30" width="20" height="604" fill="rgba(233,69,32,0.05)" stroke="#E94520" stroke-width="0.5"/>
+                    <!-- Elevator car -->
+                    <rect x="337" y="290" width="16" height="36" fill="#E94520" opacity="0.3" stroke="#E94520" stroke-width="0.8"/>
+                    <!-- Skip arrow -->
+                    <defs>
+                        <marker id="arrowRed" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                            <polygon points="0 0, 6 2, 0 4" fill="#E94520"/>
+                        </marker>
+                        <marker id="arrowWhite" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+                            <polygon points="0 0, 6 2, 0 4" fill="#8B7D6B"/>
+                        </marker>
+                    </defs>
+                    <path d="M 395 310 L 395 160" fill="none" stroke="#E94520" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+                    <text x="405" y="240" fill="#E94520" font-size="8" font-family="monospace">SKIP</text>
+                    <text x="405" y="250" fill="#E94520" font-size="7" font-family="monospace">3F→5F</text>
+                    <!-- Descent -->
+                    <path d="M 420 70 L 420 190 L 430 190" fill="none" stroke="#8B7D6B" stroke-width="0.8" stroke-dasharray="3,3"/>
+                    <path d="M 430 190 L 430 530" fill="none" stroke="#8B7D6B" stroke-width="0.8" stroke-dasharray="3,3" marker-end="url(#arrowWhite)"/>
+                    <text x="438" y="360" fill="#5a5a60" font-size="7" font-family="monospace" transform="rotate(-90,438,360)">DESCENT (EXIT)</text>
+                    <!-- B1 -->
+                    <text x="200" y="585" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="middle">EVENT ARENA</text>
+                    <text x="200" y="598" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="middle">4.5m clear · raw concrete · flexible</text>
+                    <!-- 1F -->
+                    <rect x="130" y="480" width="80" height="46" fill="none" stroke="#E8E0D4" stroke-width="0.5"/>
+                    <text x="170" y="500" fill="#E8E0D4" font-size="7" font-family="monospace" text-anchor="middle">AIRLOCK</text>
+                    <text x="170" y="512" fill="#4a4a50" font-size="6" font-family="monospace" text-anchor="middle">2.4m ceil → 4.2m</text>
+                    <path d="M 80 505 L 128 505" fill="none" stroke="#E94520" stroke-width="1" marker-end="url(#arrowRed)"/>
+                    <text x="75" y="500" fill="#E94520" font-size="7" font-family="monospace" text-anchor="end">ENTER</text>
+                    <rect x="220" y="480" width="100" height="46" fill="none" stroke="#4a4a50" stroke-width="0.3"/>
+                    <text x="270" y="505" fill="#5a5a60" font-size="7" font-family="monospace" text-anchor="middle">RECEPTION</text>
+                    <!-- 2F -->
+                    <circle cx="180" cy="395" r="18" fill="none" stroke="#6495ED" stroke-width="0.8"/>
+                    <text x="180" y="398" fill="#6495ED" font-size="6" font-family="monospace" text-anchor="middle">SCAN</text>
+                    <rect x="230" y="375" width="80" height="46" fill="none" stroke="#6495ED" stroke-width="0.3"/>
+                    <text x="270" y="400" fill="#5a5a60" font-size="7" font-family="monospace" text-anchor="middle">AI VISUAL</text>
+                    <text x="270" y="412" fill="#4a4a50" font-size="6" font-family="monospace" text-anchor="middle">270° LED wall</text>
+                    <!-- 3F -->
+                    <rect x="120" y="275" width="100" height="46" fill="none" stroke="#C4A882" stroke-width="0.5"/>
+                    <text x="170" y="300" fill="#C4A882" font-size="7" font-family="monospace" text-anchor="middle">CAFE + LOUNGE</text>
+                    <rect x="240" y="280" width="60" height="36" fill="none" stroke="#E94520" stroke-width="0.8"/>
+                    <text x="270" y="300" fill="#E94520" font-size="6" font-family="monospace" text-anchor="middle">ELEVATOR</text>
+                    <text x="270" y="310" fill="#E94520" font-size="6" font-family="monospace" text-anchor="middle">LOBBY</text>
+                    <!-- 4F -->
+                    <rect x="120" y="175" width="90" height="46" fill="none" stroke="#4a4a50" stroke-width="0.3"/>
+                    <text x="165" y="200" fill="#5a5a60" font-size="7" font-family="monospace" text-anchor="middle">CHECKOUT</text>
+                    <rect x="230" y="180" width="70" height="36" fill="none" stroke="#4a4a50" stroke-width="0.3"/>
+                    <text x="265" y="200" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="middle">PACKAGING</text>
+                    <!-- Escalator -->
+                    <line x1="115" y1="230" x2="115" y2="530" stroke="#C4A882" stroke-width="0.8" stroke-dasharray="4,4"/>
+                    <text x="108" y="380" fill="#C4A882" font-size="6" font-family="monospace" text-anchor="end" transform="rotate(-90,108,380)">ESCALATOR 4F→1F</text>
+                    <!-- 5F -->
+                    <rect x="110" y="75" width="210" height="46" fill="rgba(255,255,255,0.02)" stroke="#FFFFFF" stroke-width="0.5"/>
+                    <circle cx="200" cy="98" r="22" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.5"/>
+                    <text x="200" y="95" fill="#FFFFFF" font-size="8" font-family="monospace" text-anchor="middle">THE REVEAL</text>
+                    <text x="200" y="108" fill="#FFFFFF" font-size="6" font-family="monospace" text-anchor="middle" opacity="0.6">planetary environment · 5m void</text>
+                    <!-- 6F -->
+                    <rect x="120" y="42" width="70" height="30" fill="none" stroke="#4CAF50" stroke-width="0.5"/>
+                    <text x="155" y="60" fill="#4CAF50" font-size="6" font-family="monospace" text-anchor="middle">3D PRINT</text>
+                    <rect x="200" y="42" width="50" height="30" fill="none" stroke="#4CAF50" stroke-width="0.5"/>
+                    <text x="225" y="60" fill="#4CAF50" font-size="6" font-family="monospace" text-anchor="middle">ROBOT</text>
+                    <rect x="260" y="42" width="50" height="30" fill="none" stroke="#4CAF50" stroke-width="0.5"/>
+                    <text x="285" y="55" fill="#4CAF50" font-size="6" font-family="monospace" text-anchor="middle">HAND</text>
+                    <text x="285" y="64" fill="#4CAF50" font-size="6" font-family="monospace" text-anchor="middle">OFF</text>
+                    <line x1="120" y1="76" x2="310" y2="76" stroke="#E8E0D4" stroke-width="0.8" stroke-dasharray="2,2"/>
+                    <text x="215" y="84" fill="#5a5a60" font-size="6" font-family="monospace" text-anchor="middle">viewing glass</text>
+                    <!-- Floor labels -->
+                    <text x="55" y="585" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">B1</text>
+                    <text x="55" y="500" fill="#E8E0D4" font-size="9" font-family="monospace" text-anchor="end">1F</text>
+                    <text x="55" y="400" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">2F</text>
+                    <text x="55" y="300" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">3F</text>
+                    <text x="55" y="200" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">4F</text>
+                    <text x="55" y="100" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">5F</text>
+                    <text x="55" y="58" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">6F</text>
+                    <!-- Elevation markers -->
+                    <text x="55" y="634" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">-5.0m</text>
+                    <text x="55" y="534" fill="#8B7D6B" font-size="7" font-family="monospace" text-anchor="end">±0.0</text>
+                    <text x="55" y="134" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+20.0</text>
+                    <text x="55" y="34" fill="#4a4a50" font-size="7" font-family="monospace" text-anchor="end">+25.0</text>
+                    <!-- Intensity bar -->
+                    <rect x="450" y="626" width="8" height="8" fill="#2A2A30"/>
+                    <rect x="450" y="526" width="8" height="96" fill="#1a1a1e"/>
+                    <rect x="450" y="426" width="8" height="96" fill="#252528"/>
+                    <rect x="450" y="326" width="8" height="96" fill="#2A2A30"/>
+                    <rect x="450" y="226" width="8" height="96" fill="#1a1a1e"/>
+                    <rect x="450" y="126" width="8" height="96" fill="#E94520" opacity="0.6"/>
+                    <rect x="450" y="30" width="8" height="96" fill="#E94520" opacity="0.4"/>
+                    <text x="454" y="20" fill="#5a5a60" font-size="6" font-family="monospace" text-anchor="middle">INT</text>
+                    <!-- Title -->
+                    <text x="240" y="670" fill="#8B7D6B" font-size="9" font-family="monospace" letter-spacing="3" text-anchor="middle">LONGITUDINAL SECTION — SCALE NTS</text>
+                    <text x="240" y="685" fill="#5a5a60" font-size="7" font-family="monospace" text-anchor="middle">SHOWING CIRCULATION + PROGRAM</text>
+                </svg>
+            </div>
+
+            <div class="info-panel">
+                <h3>Circulation</h3>
+                <div class="info-row"><span class="label">Ascent</span><span class="value">1F→2F→3F→5F→6F</span></div>
+                <div class="info-row"><span class="label">Skip</span><span class="value">3F→5F (elevator)</span></div>
+                <div class="info-row"><span class="label">Descent</span><span class="value">6F→4F→1F (esc.)</span></div>
+                <div class="info-row"><span class="label">B1</span><span class="value">Independent access</span></div>
+
+                <h3>Clear Heights</h3>
+                <div class="info-row"><span class="label">B1 Arena</span><span class="value">4.5m</span></div>
+                <div class="info-row"><span class="label">1F Airlock</span><span class="value">2.4m → 4.2m</span></div>
+                <div class="info-row"><span class="label">2F Experience</span><span class="value">4.0m</span></div>
+                <div class="info-row"><span class="label">3F Cafe</span><span class="value">4.0m</span></div>
+                <div class="info-row"><span class="label">4F Checkout</span><span class="value">3.8m</span></div>
+                <div class="info-row"><span class="label">5F Reveal</span><span class="value">5.0m (exposed)</span></div>
+                <div class="info-row"><span class="label">6F Mfg</span><span class="value">4.0m</span></div>
+
+                <h3>Key Moments</h3>
+                <div class="info-note">
+                    <strong style="color:var(--dx-bone)">1F Airlock:</strong> Ceiling compresses to 2.4m then releases to 4.2m. 15-degree corridor bend eliminates the street.<br><br>
+                    <strong style="color:var(--dx-bone)">3F→5F Elevator:</strong> 12-second ride. Cab goes dark. Low-frequency tone builds. Rim light at door edges. 1200ms mechanical door open.<br><br>
+                    <strong style="color:var(--dx-bone)">5F Reveal:</strong> Full 5m void — exposed structure, no ceiling finish. Crushed basalt floor. 3.0m portal ring. Temperature drops to 18°C.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: AREA SUMMARY                       -->
+    <!-- ========================================== -->
+    <div class="view-panel" id="view-area">
+        <div class="drawing-layout">
+            <div class="drawing-area" style="flex-direction:column; max-width:600px;">
+                <svg viewBox="0 0 500 400" width="500" height="400" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="500" height="400" fill="#0A0A0C"/>
+                    <text x="250" y="30" fill="#8B7D6B" font-size="10" font-family="monospace" letter-spacing="2" text-anchor="middle">AREA BY FLOOR (SQFT)</text>
+                    <g transform="translate(80,50)">
+                        <rect x="0" y="0" width="320" height="35" fill="#1E1E24" stroke="#2A2A30" stroke-width="0.5"/>
+                        <text x="10" y="22" fill="#8B7D6B" font-size="10" font-family="monospace">B1  EVENT</text>
+                        <text x="310" y="22" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="42" width="320" height="35" fill="rgba(233,69,32,0.1)" stroke="rgba(233,69,32,0.3)" stroke-width="0.5"/>
+                        <text x="10" y="64" fill="#E94520" font-size="10" font-family="monospace">1F  ARRIVAL</text>
+                        <text x="310" y="64" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="84" width="320" height="35" fill="#1E1E24" stroke="#2A2A30" stroke-width="0.5"/>
+                        <text x="10" y="106" fill="#8B7D6B" font-size="10" font-family="monospace">2F  EXPERIENCE</text>
+                        <text x="310" y="106" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="126" width="320" height="35" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.2)" stroke-width="0.5"/>
+                        <text x="10" y="148" fill="#C4A882" font-size="10" font-family="monospace">3F  CAFE</text>
+                        <text x="310" y="148" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="168" width="320" height="35" fill="#151518" stroke="#1E1E24" stroke-width="0.5"/>
+                        <text x="10" y="190" fill="#5a5a60" font-size="10" font-family="monospace">4F  CHECKOUT</text>
+                        <text x="310" y="190" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="210" width="320" height="35" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <text x="10" y="232" fill="#FFFFFF" font-size="10" font-family="monospace">5F  THE REVEAL</text>
+                        <text x="310" y="232" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <rect x="0" y="252" width="320" height="35" fill="rgba(76,175,80,0.06)" stroke="rgba(76,175,80,0.2)" stroke-width="0.5"/>
+                        <text x="10" y="274" fill="#4CAF50" font-size="10" font-family="monospace">6F  MANUFACTURING</text>
+                        <text x="310" y="274" fill="#E8E0D4" font-size="10" font-family="monospace" text-anchor="end">370</text>
+
+                        <line x1="0" y1="296" x2="320" y2="296" stroke="#E94520" stroke-width="1"/>
+                        <text x="10" y="316" fill="#E94520" font-size="11" font-family="monospace" font-weight="700">TOTAL</text>
+                        <text x="310" y="316" fill="#E94520" font-size="11" font-family="monospace" font-weight="700" text-anchor="end">2,590 sqft</text>
+                        <text x="310" y="332" fill="#5a5a60" font-size="9" font-family="monospace" text-anchor="end">~241 sqm</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="info-panel">
+                <h3>Area by Floor</h3>
+                <div class="info-row"><span class="label">B1 — Event</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">1F — Arrival</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">2F — Experience</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">3F — Cafe</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">4F — Checkout</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">5F — Reveal</span><span class="value">370 sqft</span></div>
+                <div class="info-row"><span class="label">6F — Manufacturing</span><span class="value">370 sqft</span></div>
+                <div class="total-row"><span>Total GFA</span><span class="value">2,590 sqft</span></div>
+                <div class="info-row"><span class="label">Metric</span><span class="value">~241 sqm</span></div>
+
+                <h3>Area by Program</h3>
+                <div class="info-row"><span class="label">Retail & Display</span><span class="value">1,650 sqft</span></div>
+                <div class="info-row"><span class="label">Cultural & Lounge</span><span class="value">350 sqft</span></div>
+                <div class="info-row"><span class="label">Back of House</span><span class="value">350 sqft</span></div>
+                <div class="info-row"><span class="label">Circulation (core)</span><span class="value">315 sqft</span></div>
+
+                <h3>Vertical Core (per floor)</h3>
+                <div class="info-row"><span class="label">Elevator shaft</span><span class="value">~12 sqft</span></div>
+                <div class="info-row"><span class="label">Fire stair</span><span class="value">~18 sqft</span></div>
+                <div class="info-row"><span class="label">Escalator</span><span class="value">~10 sqft</span></div>
+                <div class="info-row"><span class="label">MEP risers</span><span class="value">~5 sqft</span></div>
+                <div class="total-row"><span>Core / floor</span><span class="value">~45 sqft</span></div>
+
+                <h3>Footprint</h3>
+                <div class="info-row"><span class="label">Floor plate</span><span class="value">~5.8m x 5.8m</span></div>
+                <div class="info-row"><span class="label">Usable / floor</span><span class="value">~325 sqft</span></div>
+                <div class="info-row"><span class="label">Core deduction</span><span class="value">~45 sqft</span></div>
+
+                <div class="info-note">Footprint computed from 370 sqft = ~34.4 sqm. Assuming roughly square plan: ~5.86m x 5.86m. Narrow-lot vertical retail format similar to Gangnam / Garosugil typology.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        DUNE.X FLAGSHIP — COMPLETE SPATIAL PACKAGE — FLOOR PLANS + ELEVATION + SECTION + AREA — PHASE 1
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// View Switching
+// ============================================
+function switchView(viewId) {
+    document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + viewId).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// ============================================
+// Floor Plan Data
+// ============================================
+const floors = {
+    'B1': {
+        id: 'B1', name: 'Event Floor', elevation: '-5.0m to 0.0m',
+        zones: [
+            { name: 'Event Arena', area: '250 sqft', color: '#E94520' },
+            { name: 'Backstage / Storage', area: '50 sqft', color: '#8B7D6B' },
+            { name: 'Service Access', area: '25 sqft', color: '#C4A882' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Raw volume.</em> Board-formed concrete. Exposed ceiling structure at 4.5m.',
+            'Configurable for 40-60 standing, 25-30 seated.',
+            'Floor-embedded 1.2m x 1.2m power/data grid.',
+            'Independent from retail journey. Separate stair access.'
+        ],
+        svg: generateB1
+    },
+    '1F': {
+        id: '1F', name: 'Arrival', elevation: '0.0m to +5.0m',
+        zones: [
+            { name: 'Airlock Entry Corridor', area: '120 sqft', color: '#E8E0D4' },
+            { name: 'Reception / Brand Chamber', area: '115 sqft', color: '#D0D8E8' },
+            { name: 'Escalator Landing', area: '50 sqft', color: '#8B7D6B' },
+            { name: 'Street Entrance', area: '40 sqft', color: '#C4A882' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The threshold.</em> Compressed corridor: 1.4m wide, 2.4m ceiling.',
+            'No product displayed. Atmosphere only.',
+            'Corridor bends 15 degrees midway. Street disappears.',
+            'DUNE.X wordmark backlit on reception wall. Single sealed specimen below.'
+        ],
+        svg: generate1F
+    },
+    '2F': {
+        id: '2F', name: 'Experience Zone', elevation: '+5.0m to +10.0m',
+        zones: [
+            { name: 'Biodata Scanning Station', area: '100 sqft', color: '#D0D8E8' },
+            { name: 'AI Visualization Wall', area: '80 sqft', color: '#E94520' },
+            { name: 'Interactive Installation', area: '100 sqft', color: '#E8E0D4' },
+            { name: 'Transition Corridor', area: '45 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The body becomes data.</em> Biodata scan is optional.',
+            'Scanning ring: 1.5m diameter, 12 depth cameras, 45-second capture.',
+            'AI wall: 4.0m x 2.5m rear-projection. Real-time generative visualization.',
+            'Central cylinder: Terrain Boot 01 suspended in holographic data orbit.'
+        ],
+        svg: generate2F
+    },
+    '3F': {
+        id: '3F', name: 'Cafe & Gathering', elevation: '+10.0m to +15.0m',
+        zones: [
+            { name: 'Lounge Seating', area: '140 sqft', color: '#C4A882' },
+            { name: 'Cafe Counter + Prep', area: '80 sqft', color: '#8B7D6B' },
+            { name: 'Elevator Lobby', area: '60 sqft', color: '#E94520' },
+            { name: 'Restroom', area: '45 sqft', color: '#2A2A30' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Last human floor.</em> The warmest space in the building.',
+            'Suspended 2.0m light ring at 3000K above seating.',
+            'Elevator lobby: horizontal light line at waist height. Text above: THRESHOLD.',
+            'Three-item menu. Matte black ceramic cups. D.X debossed.'
+        ],
+        svg: generate3F
+    },
+    '4F': {
+        id: '4F', name: 'Checkout', elevation: '+15.0m to +20.0m',
+        zones: [
+            { name: 'Checkout Counter', area: '80 sqft', color: '#8B7D6B' },
+            { name: 'Packaging Station', area: '70 sqft', color: '#C4A882' },
+            { name: 'Pickup Waiting', area: '80 sqft', color: '#2A2A30' },
+            { name: 'Escalator to 1F', area: '50 sqft', color: '#E8E0D4' },
+            { name: 'Staff Support', area: '45 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>Functional. Efficient. Deliberate restraint.</em>',
+            'Skipped on ascent. Visited only during descent.',
+            'Material shift: painted gypsum replaces mineral plaster.',
+            'Biodata certificate sealed into packaging. 3-4 minute ritual.'
+        ],
+        svg: generate4F
+    },
+    '5F': {
+        id: '5F', name: 'The Reveal', elevation: '+20.0m to +25.0m',
+        zones: [
+            { name: 'Planetary Environment', area: '200 sqft', color: '#D0D8E8' },
+            { name: 'Product Display Vitrines', area: '80 sqft', color: '#E94520' },
+            { name: 'Elevator Arrival Zone', area: '45 sqft', color: '#E8E0D4' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The emotional peak.</em> Elevator doors open to another world.',
+            '3.0m suspended portal ring. 5500K cold white. Full intensity.',
+            'Floor: 50mm crushed basalt. 270-degree surround projection.',
+            '4-5 hero pieces under glass domes. Terrain Boot 01 at center.',
+            'Temperature drops 2-3 degrees. Humidity: 35%.'
+        ],
+        svg: generate5F
+    },
+    '6F': {
+        id: '6F', name: 'Manufacturing', elevation: '+25.0m to +30.0m',
+        zones: [
+            { name: 'Robotic Fabrication Theater', area: '150 sqft', color: '#E8E0D4' },
+            { name: 'Viewing Gallery', area: '75 sqft', color: '#D0D8E8' },
+            { name: 'Handoff Counter', area: '60 sqft', color: '#C4A882' },
+            { name: 'Back of House', area: '40 sqft', color: '#8B7D6B' },
+            { name: 'Vertical Core', area: '45 sqft', color: '#E8E0D4' }
+        ],
+        notes: [
+            '<em>The forge.</em> Real robotic fabrication. Not theatrical.',
+            'Glass partition: 12mm laminated, anti-reflective, angled 3 degrees.',
+            'KUKA 6-axis arm. Terrain Boot 01 cycle: ~22 minutes.',
+            'LED telemetry ticker: real-time fabrication data along gallery rail.',
+            'Handoff: product emerges through pneumatic pass-through hatch.'
+        ],
+        svg: generate6F
+    }
+};
+
+// ============================================
+// SVG Floor Plan Generators
+// ============================================
+function svgOpen() {
+    return `<svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+        <rect width="340" height="340" fill="#1E1E24" rx="0"/>
+        <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(232,224,212,0.03)" stroke-width="0.5"/>
+        </pattern></defs>
+        <rect width="340" height="340" fill="url(#grid)"/>
+        <rect x="30" y="30" width="280" height="280" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="1"/>`;
+}
+
+function svgCore() {
+    return `<rect x="255" y="30" width="55" height="65" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.12)" stroke-width="0.5"/>
+        <text x="282" y="58" text-anchor="middle" class="zone-label-small">CORE</text>
+        <text x="282" y="68" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <rect x="260" y="35" width="18" height="18" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="260" y1="35" x2="278" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <line x1="278" y1="35" x2="260" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <line x1="285" y1="38" x2="285" y2="52" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="285" y1="38" x2="290" y2="38" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="290" y1="38" x2="290" y2="42" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="290" y1="42" x2="295" y2="42" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="295" y1="42" x2="295" y2="46" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="295" y1="46" x2="300" y2="46" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="300" y1="46" x2="300" y2="52" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>`;
+}
+
+function svgClose() { return `</svg>`; }
+
+function generateB1() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="30" width="222" height="200" fill="rgba(233,69,32,0.06)" stroke="rgba(233,69,32,0.2)" stroke-width="0.5"/>
+        <text x="141" y="120" text-anchor="middle" class="zone-label">EVENT ARENA</text>
+        <text x="141" y="132" text-anchor="middle" class="zone-area-text">250 sqft</text>
+        ${Array.from({length: 5}, (_, i) => Array.from({length: 4}, (_, j) =>
+            `<circle cx="${65 + i * 40}" cy="${60 + j * 40}" r="1.5" fill="rgba(233,69,32,0.25)"/>`
+        ).join('')).join('')}
+        <rect x="30" y="232" width="130" height="78" fill="rgba(139,125,107,0.08)" stroke="rgba(139,125,107,0.15)" stroke-width="0.5"/>
+        <text x="95" y="268" text-anchor="middle" class="zone-label-small">BACKSTAGE</text>
+        <text x="95" y="280" text-anchor="middle" class="zone-area-text">50 sqft</text>
+        <rect x="162" y="232" width="90" height="78" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="207" y="268" text-anchor="middle" class="zone-label-small">SERVICE</text>
+        <text x="207" y="280" text-anchor="middle" class="zone-area-text">25 sqft</text>
+    ` + svgClose();
+}
+
+function generate1F() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="270" width="65" height="40" fill="rgba(196,168,130,0.08)" stroke="rgba(196,168,130,0.2)" stroke-width="0.5"/>
+        <text x="62" y="290" text-anchor="middle" class="zone-label-small">ENTRANCE</text>
+        <text x="62" y="300" text-anchor="middle" class="zone-area-text">40 sqft</text>
+        <text x="62" y="340" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.3)">STREET</text>
+        <rect x="30" y="150" width="35" height="118" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <path d="M 30 150 L 65 150 L 90 130 L 90 100" fill="none" stroke="rgba(232,224,212,0.15)" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="47" y="200" text-anchor="middle" class="zone-label" transform="rotate(-90, 47, 200)">AIRLOCK</text>
+        <text x="75" y="145" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.3)">15 deg</text>
+        <line x1="30" y1="240" x2="65" y2="240" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="47" y="248" text-anchor="middle" class="zone-area-text">1.4m w</text>
+        <rect x="67" y="95" width="185" height="135" fill="rgba(208,216,232,0.06)" stroke="rgba(208,216,232,0.12)" stroke-width="0.5"/>
+        <text x="159" y="155" text-anchor="middle" class="zone-label">RECEPTION</text>
+        <text x="159" y="167" text-anchor="middle" class="zone-label-small">BRAND CHAMBER</text>
+        <text x="159" y="179" text-anchor="middle" class="zone-area-text">115 sqft</text>
+        <rect x="100" y="98" width="120" height="3" fill="rgba(232,224,212,0.15)"/>
+        <text x="160" y="112" text-anchor="middle" class="zone-area-text" style="fill: rgba(232,224,212,0.4)">D U N E . X</text>
+        <rect x="147" y="128" width="24" height="16" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <circle cx="159" cy="136" r="3" fill="rgba(232,224,212,0.1)" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <rect x="100" y="232" width="152" height="78" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="176" y="268" text-anchor="middle" class="zone-label-small">ESCALATOR LANDING</text>
+        <text x="176" y="280" text-anchor="middle" class="zone-area-text">50 sqft / from 4F</text>
+        <line x1="160" y1="242" x2="190" y2="265" stroke="rgba(139,125,107,0.3)" stroke-width="1.5"/>
+    ` + svgClose();
+}
+
+function generate2F() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="30" width="222" height="60" fill="rgba(233,69,32,0.06)" stroke="rgba(233,69,32,0.15)" stroke-width="0.5"/>
+        <text x="141" y="58" text-anchor="middle" class="zone-label">AI VISUALIZATION WALL</text>
+        <text x="141" y="70" text-anchor="middle" class="zone-area-text">80 sqft / 4.0m x 2.5m rear-projection</text>
+        <line x1="35" y1="87" x2="247" y2="87" stroke="rgba(233,69,32,0.08)" stroke-width="3"/>
+        <circle cx="150" cy="180" r="40" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <circle cx="150" cy="180" r="25" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <circle cx="150" cy="180" r="5" fill="rgba(232,224,212,0.1)"/>
+        <text x="150" y="195" text-anchor="middle" class="zone-area-text">TERRAIN BOOT 01</text>
+        <text x="150" y="165" text-anchor="middle" class="zone-label-small">INSTALLATION</text>
+        <text x="150" y="230" text-anchor="middle" class="zone-area-text">100 sqft</text>
+        <circle cx="150" cy="180" r="55" fill="none" stroke="rgba(208,216,232,0.06)" stroke-width="0.5" stroke-dasharray="1,3"/>
+        <rect x="30" y="105" width="70" height="90" fill="rgba(208,216,232,0.08)" stroke="rgba(208,216,232,0.2)" stroke-width="0.5"/>
+        <text x="65" y="145" text-anchor="middle" class="zone-label-small">BIODATA</text>
+        <text x="65" y="155" text-anchor="middle" class="zone-label-small">SCAN</text>
+        <text x="65" y="168" text-anchor="middle" class="zone-area-text">100 sqft</text>
+        <circle cx="65" cy="140" r="14" fill="none" stroke="rgba(208,216,232,0.25)" stroke-width="1"/>
+        <text x="65" y="180" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.3)">OPTIONAL</text>
+        <rect x="30" y="260" width="222" height="50" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.1)" stroke-width="0.5"/>
+        <text x="141" y="288" text-anchor="middle" class="zone-label-small">TRANSITION CORRIDOR</text>
+        <text x="141" y="300" text-anchor="middle" class="zone-area-text">45 sqft / to 3F</text>
+    ` + svgClose();
+}
+
+function generate3F() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="30" width="222" height="140" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="141" y="80" text-anchor="middle" class="zone-label">LOUNGE</text>
+        <text x="141" y="92" text-anchor="middle" class="zone-area-text">140 sqft</text>
+        <circle cx="141" cy="100" r="30" fill="none" stroke="rgba(232,224,212,0.15)" stroke-width="1.5"/>
+        <circle cx="141" cy="100" r="28" fill="none" stroke="rgba(232,224,212,0.05)" stroke-width="3"/>
+        <text x="141" y="104" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">2.0m RING / 3000K</text>
+        <rect x="60" y="115" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="60" y="128" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="162" y="115" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="162" y="128" width="40" height="8" fill="rgba(196,168,130,0.15)" rx="1"/>
+        <rect x="115" y="118" width="32" height="16" fill="rgba(42,42,48,0.5)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <rect x="30" y="175" width="150" height="60" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="105" y="200" text-anchor="middle" class="zone-label-small">CAFE COUNTER</text>
+        <text x="105" y="212" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <rect x="45" y="190" width="80" height="6" fill="rgba(139,125,107,0.2)" rx="1"/>
+        <rect x="182" y="175" width="70" height="85" fill="rgba(233,69,32,0.08)" stroke="rgba(233,69,32,0.2)" stroke-width="0.5"/>
+        <text x="217" y="210" text-anchor="middle" class="zone-label-small">ELEVATOR</text>
+        <text x="217" y="222" text-anchor="middle" class="zone-label-small">LOBBY</text>
+        <text x="217" y="234" text-anchor="middle" class="zone-area-text">60 sqft</text>
+        <text x="217" y="250" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.4)">THRESHOLD</text>
+        <line x1="192" y1="195" x2="242" y2="195" stroke="rgba(232,224,212,0.25)" stroke-width="1.5"/>
+        <rect x="30" y="240" width="80" height="70" fill="rgba(42,42,48,0.3)" stroke="rgba(42,42,48,0.5)" stroke-width="0.5"/>
+        <text x="70" y="275" text-anchor="middle" class="zone-label-small">WC</text>
+        <text x="70" y="287" text-anchor="middle" class="zone-area-text">45 sqft</text>
+    ` + svgClose();
+}
+
+function generate4F() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="30" width="130" height="90" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.12)" stroke-width="0.5"/>
+        <text x="95" y="70" text-anchor="middle" class="zone-label">CHECKOUT</text>
+        <text x="95" y="82" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <rect x="50" y="55" width="60" height="5" fill="rgba(139,125,107,0.2)" rx="1"/>
+        <rect x="72" y="47" width="16" height="10" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <rect x="162" y="30" width="90" height="90" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.1)" stroke-width="0.5"/>
+        <text x="207" y="70" text-anchor="middle" class="zone-label-small">PACKAGING</text>
+        <text x="207" y="82" text-anchor="middle" class="zone-area-text">70 sqft</text>
+        <line x1="162" y1="35" x2="162" y2="115" stroke="rgba(208,216,232,0.15)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="155" y="75" text-anchor="end" class="zone-area-text" style="fill:rgba(208,216,232,0.2)">GLASS</text>
+        <rect x="30" y="125" width="130" height="90" fill="rgba(42,42,48,0.2)" stroke="rgba(42,42,48,0.3)" stroke-width="0.5"/>
+        <text x="95" y="165" text-anchor="middle" class="zone-label-small">PICKUP WAITING</text>
+        <text x="95" y="177" text-anchor="middle" class="zone-area-text">80 sqft</text>
+        <rect x="50" y="148" width="35" height="5" fill="rgba(196,168,130,0.1)" rx="1"/>
+        <rect x="95" y="148" width="35" height="5" fill="rgba(196,168,130,0.1)" rx="1"/>
+        <rect x="162" y="125" width="90" height="90" fill="rgba(139,125,107,0.04)" stroke="rgba(139,125,107,0.08)" stroke-width="0.5"/>
+        <text x="207" y="170" text-anchor="middle" class="zone-label-small">STAFF</text>
+        <text x="207" y="182" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <rect x="30" y="220" width="120" height="90" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5"/>
+        <text x="90" y="260" text-anchor="middle" class="zone-label-small">ESCALATOR TO 1F</text>
+        <text x="90" y="272" text-anchor="middle" class="zone-area-text">50 sqft / 3-floor descent</text>
+        <line x1="50" y1="235" x2="110" y2="295" stroke="rgba(232,224,212,0.15)" stroke-width="2"/>
+        <text x="90" y="290" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">&#8595; TO 1F EXIT</text>
+        <text x="170" y="300" text-anchor="start" class="zone-area-text" style="fill:rgba(139,125,107,0.3)">PAINTED GYPSUM / 4000K</text>
+    ` + svgClose();
+}
+
+function generate5F() {
+    return svgOpen() + `
+        <rect x="30" y="30" width="280" height="280" fill="rgba(208,216,232,0.03)" stroke="rgba(208,216,232,0.08)" stroke-width="0.5"/>
+        ${Array.from({length: 80}, () => {
+            const x = 35 + Math.random() * 270;
+            const y = 35 + Math.random() * 270;
+            const r = 0.3 + Math.random() * 0.8;
+            return `<circle cx="${x}" cy="${y}" r="${r}" fill="rgba(232,224,212,${0.02 + Math.random() * 0.04})"/>`;
+        }).join('')}
+        <path d="M 310 30 L 310 310 L 30 310 L 30 30" fill="none" stroke="rgba(208,216,232,0.12)" stroke-width="3"/>
+        <text x="25" y="170" text-anchor="middle" class="zone-area-text" transform="rotate(-90, 25, 170)" style="fill:rgba(208,216,232,0.2)">SURROUND PROJECTION</text>
+        <circle cx="170" cy="170" r="55" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="2"/>
+        <circle cx="170" cy="170" r="53" fill="none" stroke="rgba(232,224,212,0.08)" stroke-width="4"/>
+        <circle cx="170" cy="170" r="57" fill="none" stroke="rgba(232,224,212,0.04)" stroke-width="6"/>
+        <text x="170" y="168" text-anchor="middle" class="zone-label" style="fill:rgba(232,224,212,0.5)">PORTAL RING</text>
+        <text x="170" y="180" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.3)">3.0m / 5500K / FULL</text>
+        <rect x="157" y="145" width="10" height="10" fill="rgba(233,69,32,0.15)" stroke="rgba(233,69,32,0.3)" stroke-width="0.5"/>
+        <text x="162" y="141" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.5)">TB01</text>
+        <rect x="135" y="158" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="180" y="158" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="142" y="180" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <rect x="175" y="180" width="8" height="8" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="170" y="205" text-anchor="middle" class="zone-area-text">5 VITRINES / 80 sqft</text>
+        <rect x="35" y="35" width="80" height="60" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="75" y="60" text-anchor="middle" class="zone-label-small">ELEVATOR</text>
+        <text x="75" y="72" text-anchor="middle" class="zone-label-small">ARRIVAL</text>
+        <text x="75" y="84" text-anchor="middle" class="zone-area-text">45 sqft</text>
+        <rect x="40" y="38" width="20" height="15" fill="none" stroke="rgba(232,224,212,0.2)" stroke-width="0.5"/>
+        <line x1="50" y1="38" x2="50" y2="53" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <path d="M 75 95 L 75 120 L 140 155" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="1" stroke-dasharray="4,3"/>
+        <rect x="255" y="30" width="55" height="65" fill="rgba(232,224,212,0.04)" stroke="rgba(232,224,212,0.08)" stroke-width="0.5"/>
+        <text x="282" y="58" text-anchor="middle" class="zone-label-small" style="fill:rgba(232,224,212,0.3)">CORE</text>
+        <text x="282" y="72" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.25)">&#8593; TO 6F</text>
+        <text x="170" y="300" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.2)">18-19C / 35% RH / CRUSHED BASALT FLOOR</text>
+    ` + svgClose();
+}
+
+function generate6F() {
+    return svgOpen() + svgCore() + `
+        <rect x="30" y="30" width="222" height="160" fill="rgba(232,224,212,0.06)" stroke="rgba(232,224,212,0.15)" stroke-width="0.5"/>
+        <text x="141" y="70" text-anchor="middle" class="zone-label">FABRICATION THEATER</text>
+        <text x="141" y="82" text-anchor="middle" class="zone-area-text">150 sqft / 5000K overhead</text>
+        <circle cx="141" cy="120" r="3" fill="rgba(232,224,212,0.2)"/>
+        <line x1="141" y1="120" x2="165" y2="100" stroke="rgba(232,224,212,0.2)" stroke-width="1.5"/>
+        <line x1="165" y1="100" x2="180" y2="115" stroke="rgba(232,224,212,0.2)" stroke-width="1.5"/>
+        <circle cx="180" cy="115" r="2" fill="rgba(232,224,212,0.15)"/>
+        <rect x="125" y="110" width="32" height="32" fill="none" stroke="rgba(232,224,212,0.1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="141" y="155" text-anchor="middle" class="zone-area-text" style="fill:rgba(232,224,212,0.25)">KUKA 6-AXIS</text>
+        <rect x="40" y="95" width="30" height="50" fill="rgba(139,125,107,0.06)" stroke="rgba(139,125,107,0.1)" stroke-width="0.5"/>
+        <text x="55" y="122" text-anchor="middle" class="zone-area-text">FEED</text>
+        <line x1="30" y1="192" x2="252" y2="192" stroke="rgba(208,216,232,0.25)" stroke-width="1.5"/>
+        <text x="141" y="204" text-anchor="middle" class="zone-area-text" style="fill:rgba(208,216,232,0.35)">12mm LAMINATED GLASS / 3 DEG ANGLE</text>
+        <rect x="30" y="195" width="222" height="55" fill="rgba(208,216,232,0.04)" stroke="rgba(208,216,232,0.08)" stroke-width="0.5"/>
+        <text x="141" y="220" text-anchor="middle" class="zone-label-small">VIEWING GALLERY</text>
+        <text x="141" y="232" text-anchor="middle" class="zone-area-text">75 sqft / +200mm raised platform</text>
+        <line x1="35" y1="240" x2="247" y2="240" stroke="rgba(233,69,32,0.15)" stroke-width="1"/>
+        <text x="141" y="247" text-anchor="middle" class="zone-area-text" style="fill:rgba(233,69,32,0.3)">TELEMETRY TICKER / REAL-TIME DATA</text>
+        <rect x="30" y="255" width="130" height="55" fill="rgba(196,168,130,0.06)" stroke="rgba(196,168,130,0.12)" stroke-width="0.5"/>
+        <text x="95" y="278" text-anchor="middle" class="zone-label-small">HANDOFF</text>
+        <text x="95" y="290" text-anchor="middle" class="zone-area-text">60 sqft / 3000K warm</text>
+        <rect x="80" y="252" width="12" height="6" fill="rgba(232,224,212,0.08)" stroke="rgba(232,224,212,0.12)" stroke-width="0.5"/>
+        <text x="86" y="260" text-anchor="middle" class="zone-area-text" style="font-size:5px; fill:rgba(232,224,212,0.2)">HATCH</text>
+        <rect x="162" y="255" width="90" height="55" fill="rgba(139,125,107,0.04)" stroke="rgba(139,125,107,0.08)" stroke-width="0.5"/>
+        <text x="207" y="278" text-anchor="middle" class="zone-label-small">BOH</text>
+        <text x="207" y="290" text-anchor="middle" class="zone-area-text">40 sqft</text>
+    ` + svgClose();
+}
+
+// ============================================
+// Floor Selection UI
+// ============================================
+let currentFloor = '6F';
+
+function selectFloor(floorId) {
+    currentFloor = floorId;
+    document.querySelectorAll('.floor-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.floor === floorId);
+    });
+    document.querySelectorAll('.journey-node').forEach(node => {
+        node.classList.toggle('active', node.dataset.floor === floorId);
+    });
+    renderDetail(floorId);
+}
+
+function renderDetail(floorId) {
+    const floor = floors[floorId];
+    const panel = document.getElementById('detailPanel');
+    panel.innerHTML = `
+        <div class="detail-header">
+            <div class="detail-floor-id">${floor.id}</div>
+            <div class="detail-floor-name">${floor.name}</div>
+            <div class="detail-floor-elevation">${floor.elevation}</div>
+        </div>
+        <div class="plan-container">${floor.svg()}</div>
+        <div class="zone-list">
+            ${floor.zones.map(z => `
+                <div class="zone-item">
+                    <div class="zone-dot" style="background: ${z.color};"></div>
+                    <div class="zone-item-name">${z.name}</div>
+                    <div class="zone-item-area">${z.area}</div>
+                </div>
+            `).join('')}
+        </div>
+        <div class="spatial-notes">
+            <div class="spatial-notes-label">Spatial Notes</div>
+            ${floor.notes.map(n => `<div class="spatial-note">${n}</div>`).join('')}
+        </div>
+    `;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    selectFloor('6F');
+});
+</script>
+
+</body>
+</html>

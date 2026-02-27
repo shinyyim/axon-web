@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXON. — Customize Nerve 001</title>
+    <meta name="description" content="Your nervous system, decoded. Customize your Nerve 001 from biodata.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="customize.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav"><div class="nav-inner">
+    <a class="nav-logo" href="http://localhost:3002/nerve.html">AXON<span class="dot">.</span></a>
+    <ul class="nav-links">
+        <li><a href="http://localhost:3002/nerve.html">Nerve 001</a></li>
+        <li><a href="http://localhost:3003/customize.html" style="font-weight:600">Customize</a></li>
+        <li><a href="http://localhost:3004/lattice.html">Structure</a></li>
+    </ul>
+    <div class="nav-right">
+        <a class="nav-cta" href="#book">Book a Scan</a>
+    </div>
+</div></nav>
+
+<!-- STAGE TABS -->
+<div class="stabs">
+    <div class="stab active" data-stage="1">01 Body</div>
+    <div class="stab" data-stage="2">02 Data</div>
+    <div class="stab" data-stage="3">03 Pattern</div>
+    <div class="stab" data-stage="4">04 Form</div>
+</div>
+
+<!-- ============================================================
+     STAGE 1: BODY
+     ============================================================ -->
+<section class="stage active" id="s1">
+    <div class="s1-hd fi">
+        <h1>Customize Your<br>Nerve 001<span class="dot">.</span></h1>
+        <div class="hero-tag">Enter your biodata.</div>
+    </div>
+
+    <div class="s1-split">
+        <!-- Inputs -->
+        <div class="s1-inputs">
+            <!-- Name -->
+            <div class="ig">
+                <div class="ig-hd">Runner</div>
+                <div class="ir">
+                    <span class="ir-lb">Name</span>
+                    <input type="text" class="itext" id="runner-name" placeholder="Enter your name" maxlength="30">
+                </div>
+            </div>
+
+
+            <!-- Foot Geometry -->
+            <div class="ig">
+                <div class="ig-hd">Foot Geometry</div>
+                <div class="ir">
+                    <span class="ir-lb">Length</span>
+                    <input type="range" class="isl" id="foot-length">
+                    <span class="ir-vl" id="foot-length-val">265 mm</span>
+                </div>
+                <div class="ir">
+                    <span class="ir-lb">Width</span>
+                    <input type="range" class="isl" id="foot-width">
+                    <span class="ir-vl" id="foot-width-val">100 mm</span>
+                </div>
+                <div class="ir">
+                    <span class="ir-lb">Arch</span>
+                    <div class="isel" id="arch-height">
+                        <button class="isel-btn" data-value="low">Low</button>
+                        <button class="isel-btn active" data-value="medium">Med</button>
+                        <button class="isel-btn" data-value="high">High</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purpose -->
+            <div class="ig">
+                <div class="ig-hd">Purpose</div>
+                <div class="ir">
+                    <span class="ir-lb">Type</span>
+                    <div class="isel" id="activity">
+                        <button class="isel-btn" data-value="beginner">Beginner</button>
+                        <button class="isel-btn active" data-value="training">Training</button>
+                        <button class="isel-btn" data-value="longdist">Long Dist</button>
+                        <button class="isel-btn" data-value="racing">Racing</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biomechanics -->
+            <div class="ig">
+                <div class="ig-hd">Biomechanics</div>
+                <div class="ir">
+                    <span class="ir-lb">Strike</span>
+                    <div class="isel" id="strike-pattern">
+                        <button class="isel-btn active" data-value="heel">Heel</button>
+                        <button class="isel-btn" data-value="midfoot">Mid</button>
+                        <button class="isel-btn" data-value="forefoot">Fore</button>
+                    </div>
+                </div>
+                <div class="ir">
+                    <span class="ir-lb">Pronation</span>
+                    <div class="isel" id="pronation">
+                        <button class="isel-btn" data-value="under">Under</button>
+                        <button class="isel-btn active" data-value="neutral">Neutral</button>
+                        <button class="isel-btn" data-value="over">Over</button>
+                    </div>
+                </div>
+                <div class="ir">
+                    <span class="ir-lb">Cadence</span>
+                    <input type="range" class="isl" id="cadence">
+                    <span class="ir-vl" id="cadence-val">170 spm</span>
+                    <span class="pulse-dot" id="cadence-pulse"></span>
+                </div>
+            </div>
+
+            <!-- Load Profile -->
+            <div class="ig">
+                <div class="ig-hd">Load Profile</div>
+                <div class="ir">
+                    <span class="ir-lb">Weight</span>
+                    <input type="range" class="isl" id="body-weight">
+                    <span class="ir-vl" id="body-weight-val">70 kg</span>
+                </div>
+            </div>
+
+            <!-- Extended -->
+            <button class="ext-tog" id="extend-toggle">
+                Extended parameters
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1"/></svg>
+            </button>
+            <div class="ext-wrap" id="extended-inputs">
+                <div class="ig">
+                    <div class="ir">
+                        <span class="ir-lb">Ankle</span>
+                        <div class="isel" id="ankle-flex">
+                            <button class="isel-btn" data-value="limited">Limited</button>
+                            <button class="isel-btn active" data-value="normal">Normal</button>
+                            <button class="isel-btn" data-value="hypermobile">Hyper</button>
+                        </div>
+                    </div>
+                    <div class="ir">
+                        <span class="ir-lb">Toe splay</span>
+                        <div class="isel" id="toe-splay">
+                            <button class="isel-btn" data-value="narrow">Narrow</button>
+                            <button class="isel-btn active" data-value="normal">Normal</button>
+                            <button class="isel-btn" data-value="wide">Wide</button>
+                        </div>
+                    </div>
+                    <div class="ir">
+                        <span class="ir-lb">Cushion</span>
+                        <div class="isel" id="cushion-pref">
+                            <button class="isel-btn" data-value="firm">Firm</button>
+                            <button class="isel-btn active" data-value="balanced">Balanced</button>
+                            <button class="isel-btn" data-value="soft">Soft</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Foot Canvas (dark panel) -->
+        <div class="s1-foot">
+            <div id="foot-viewer"></div>
+            <div class="s1-foot-label">Biodata Preview</div>
+        </div>
+    </div>
+
+    <div class="s1-cta">
+        <button class="btn" id="begin-computation" disabled>Begin computation.</button>
+        <div class="s1-priv">Computed locally. Nothing transmitted. Nothing stored.</div>
+    </div>
+</section>
+
+<!-- ============================================================
+     STAGE 2: DATA
+     ============================================================ -->
+<section class="stage" id="s2">
+    <div class="s2-hd fi">
+        <h2>Your Biodata Profile</h2>
+        <p>Signal decoded. Four dimensions of your movement, rendered as data.</p>
+    </div>
+    <div class="s2-grid">
+        <div class="s2-panel">
+            <canvas id="heatmap-canvas"></canvas>
+            <div class="s2-rd" data-text="peak pressure zone: {peakZone}"></div>
+        </div>
+        <div class="s2-panel">
+            <canvas id="force-canvas"></canvas>
+            <div class="s2-rd" data-text="total ground reaction force: {totalGRF}N"></div>
+        </div>
+        <div class="s2-panel">
+            <canvas id="lattice-canvas"></canvas>
+            <div class="s2-rd" data-text="total cells: {totalCells} | size: {cellMin} — {cellMax} mm"></div>
+        </div>
+        <div class="s2-panel">
+            <canvas id="signal-canvas"></canvas>
+            <div class="s2-rd" data-text="complexity: {complexity} | symmetry: {symmetry}"></div>
+        </div>
+    </div>
+    <div class="s2-cta">
+        <button class="btn" id="data-continue">Continue to computation.</button>
+    </div>
+</section>
+
+<!-- ============================================================
+     STAGE 3: PATTERN
+     ============================================================ -->
+<section class="stage" id="s3">
+    <div class="s3-wrap">
+        <div class="s3-cv">
+            <canvas id="computation-canvas"></canvas>
+            <div class="s3-done" id="pattern-complete">
+                <h2>Computation Complete.</h2>
+                <button class="btn btn-w" id="reveal-boot">Reveal your Nerve 001.</button>
+            </div>
+        </div>
+        <div class="s3-term" id="computation-terminal"></div>
+    </div>
+</section>
+
+<!-- ============================================================
+     STAGE 4: FORM
+     ============================================================ -->
+<section class="stage" id="s4">
+    <div class="s4-row">
+        <!-- Spec Card -->
+        <div class="s4-spec">
+            <div class="sp-title">Nerve 001.</div>
+            <div class="sp-id" id="spec-unit-id">AX-TB01-0000</div>
+
+            <div class="sp-sec">
+                <div class="sp-sec-hd">Lattice</div>
+                <div class="sp-row"><span class="sp-k">Cells</span><span class="sp-v" id="spec-cells">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Size</span><span class="sp-v" id="spec-cell-size">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Wall</span><span class="sp-v" id="spec-wall">&mdash;</span></div>
+            </div>
+
+            <div class="sp-sec">
+                <div class="sp-sec-hd">Tread</div>
+                <div class="sp-row"><span class="sp-k">Nodes</span><span class="sp-v" id="spec-tread-nodes">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Depth</span><span class="sp-v" id="spec-tread-depth">&mdash;</span></div>
+            </div>
+
+            <div class="sp-sec">
+                <div class="sp-sec-hd">Upper</div>
+                <div class="sp-row"><span class="sp-k">Density</span><span class="sp-v" id="spec-upper-density">&mdash;</span></div>
+            </div>
+
+            <div class="sp-sec" id="carbon-plate-sec" style="display:none">
+                <div class="sp-sec-hd">Carbon Plate</div>
+                <div class="sp-row"><span class="sp-k">Material</span><span class="sp-v" id="spec-carbon-mat">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Thickness</span><span class="sp-v" id="spec-carbon-thick">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Stiffness</span><span class="sp-v" id="spec-carbon-stiff">&mdash;</span></div>
+                <div class="sp-row"><span class="sp-k">Geometry</span><span class="sp-v" id="spec-carbon-curve">&mdash;</span></div>
+            </div>
+
+            <div class="sp-sec">
+                <div class="sp-sec-hd">Weight</div>
+                <div class="sp-row"><span class="sp-k">Per shoe</span><span class="sp-v" id="spec-weight">&mdash;</span></div>
+            </div>
+
+            <div class="sp-sec">
+                <div class="sp-sec-hd">Colorway</div>
+                <div class="cw-row">
+                    <div class="cw-item">
+                        <div class="cw-sw cw-void active" data-colorway="void"></div>
+                        <div class="cw-lb">Void</div>
+                    </div>
+                    <div class="cw-item">
+                        <div class="cw-sw cw-bone" data-colorway="bone"></div>
+                        <div class="cw-lb">Bone</div>
+                    </div>
+                    <div class="cw-item">
+                        <div class="cw-sw cw-signal" data-colorway="signal"></div>
+                        <div class="cw-lb">Signal</div>
+                    </div>
+                    <div class="cw-item">
+                        <div class="cw-sw cw-glacier" data-colorway="glacier"></div>
+                        <div class="cw-lb">Glacier</div>
+                    </div>
+                    <div class="cw-item">
+                        <div class="cw-sw cw-moss" data-colorway="moss"></div>
+                        <div class="cw-lb">Moss</div>
+                    </div>
+                    <div class="cw-item">
+                        <div class="cw-sw cw-slate" data-colorway="slate"></div>
+                        <div class="cw-lb">Slate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Viewer -->
+        <div class="s4-viewer">
+            <div id="shoe-viewer"></div>
+            <div class="v-ctrl">
+                <button class="v-btn" id="toggle-explode">Explode</button>
+                <button class="v-btn" id="toggle-wireframe">Wireframe</button>
+            </div>
+        </div>
+
+        <!-- Comparison + Actions -->
+        <div class="s4-cmp">
+            <div class="cmp-hd">Your boot vs. baseline</div>
+            <div id="comparison-bars"></div>
+            <div class="s4-acts">
+                <button class="btn btn-ac" id="generate-render">Generate AI render.</button>
+                <button class="btn btn-sm" id="reserve-scan">Reserve scan.</button>
+                <button class="btn btn-sm" id="save-config">Save configuration.</button>
+                <button class="btn btn-ghost btn-sm" id="start-over">Start over</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Render Section -->
+    <div class="s4-render" id="render-section" style="display:none">
+        <div class="render-hd">
+            <span class="render-eye">AI Render</span>
+            <h3 class="render-title">Your Nerve 001<span class="dot">.</span></h3>
+            <p class="render-desc">All biodata parameters compiled into a single visual output.</p>
+        </div>
+        <div class="render-body">
+            <!-- Loading state -->
+            <div class="render-loading" id="render-loading">
+                <div class="render-spinner"></div>
+                <div class="render-status" id="render-status">Compiling biodata into visual signal...</div>
+                <div class="render-terminal" id="render-terminal"></div>
+            </div>
+            <!-- Result -->
+            <div class="render-result" id="render-result" style="display:none">
+                <!-- Image full width -->
+                <div class="render-img-full">
+                    <img id="render-image" alt="AXON. Nerve 001 AI Render">
+                </div>
+
+                <!-- Description card below image, horizontal -->
+                <div class="render-desc-row" id="render-desc-card">
+                    <div class="rdc-col rdc-col-header">
+                        <div class="rdc-title">Nerve 001<span class="dot">.</span></div>
+                        <div class="rdc-id" id="rdc-id"></div>
+                        <div class="rdc-tagline">Trust your Signal.</div>
+                        <div class="rdc-personal" id="rdc-personal" style="display:none">
+                            <p class="rdc-personal-text" id="rdc-personal-text"></p>
+                        </div>
+                    </div>
+                    <div class="rdc-col">
+                        <div class="rdc-sec">
+                            <div class="rdc-sec-hd">Profile</div>
+                            <div class="rdc-row"><span class="rdc-k">Purpose</span><span class="rdc-v" id="rdc-purpose"></span></div>
+                            <div class="rdc-row"><span class="rdc-k">Foot</span><span class="rdc-v" id="rdc-foot"></span></div>
+                            <div class="rdc-row"><span class="rdc-k">Strike</span><span class="rdc-v" id="rdc-strike"></span></div>
+                            <div class="rdc-row"><span class="rdc-k">Colorway</span><span class="rdc-v" id="rdc-colorway"></span></div>
+                        </div>
+                    </div>
+                    <div class="rdc-col">
+                        <div class="rdc-sec">
+                            <div class="rdc-sec-hd">Construction</div>
+                            <div class="rdc-row"><span class="rdc-k">Lattice</span><span class="rdc-v" id="rdc-lattice"></span></div>
+                            <div class="rdc-row"><span class="rdc-k">Upper</span><span class="rdc-v" id="rdc-upper"></span></div>
+                            <div class="rdc-row" id="rdc-carbon-row" style="display:none"><span class="rdc-k">Carbon</span><span class="rdc-v" id="rdc-carbon"></span></div>
+                            <div class="rdc-row"><span class="rdc-k">Weight</span><span class="rdc-v" id="rdc-weight"></span></div>
+                        </div>
+                    </div>
+                    <div class="rdc-col rdc-col-perf">
+                        <div class="rdc-sec">
+                            <div class="rdc-sec-hd">Performance</div>
+                            <div id="rdc-perf"></div>
+                        </div>
+                    </div>
+                    <div class="rdc-col">
+                        <div class="rdc-sec">
+                            <div class="rdc-sec-hd">Summary</div>
+                            <p class="rdc-summary" id="rdc-summary"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompt below -->
+                <div class="render-prompt-wrap">
+                    <div class="render-prompt-label">Signal prompt</div>
+                    <div class="render-prompt-text" id="render-prompt-text"></div>
+                </div>
+            </div>
+        </div>
+        <div class="render-actions">
+            <button class="btn btn-ac" id="regenerate-render">Regenerate.</button>
+            <button class="btn btn-sm" id="download-render">Download render.</button>
+        </div>
+
+        <!-- Generated History -->
+        <div class="render-history" id="render-history">
+            <div class="rh-hd">
+                <span class="rh-label">Generated renders</span>
+                <span class="rh-count" id="rh-count">0</span>
+            </div>
+            <div class="rh-grid" id="rh-grid"></div>
+        </div>
+    </div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lb-backdrop"></div>
+    <div class="lb-content">
+        <button class="lb-close">&times;</button>
+        <img id="lb-image" alt="AXON. Render">
+        <div class="lb-desc" id="lb-desc"></div>
+        <div class="lb-info">
+            <div class="lb-id" id="lb-id"></div>
+            <div class="lb-prompt" id="lb-prompt"></div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     STAGE 5: STRUCTURE
+     ============================================================ -->
+<section class="stage" id="s5">
+<div class="lt-page">
+    <div class="lt-hero">
+        <h1>Lattice Density<span class="dot">.</span></h1>
+        <p class="sub">Adaptive gyroid cell distribution — responding to body signal in real time.</p>
+    </div>
+
+    <div class="lt-layout">
+        <!-- Left controls -->
+        <div class="lt-panel">
+            <div class="lt-title">Purpose</div>
+            <div class="sel-row" id="lt-purpose-sel">
+                <button class="sel-btn" data-value="beginner">Beginner</button>
+                <button class="sel-btn active" data-value="training">Training</button>
+                <button class="sel-btn" data-value="longdist">Long Dist</button>
+                <button class="sel-btn" data-value="racing">Racing</button>
+            </div>
+
+            <div class="lt-title">Strike Pattern</div>
+            <div class="sel-row" id="lt-strike-sel">
+                <button class="sel-btn active" data-value="heel">Heel</button>
+                <button class="sel-btn" data-value="midfoot">Midfoot</button>
+                <button class="sel-btn" data-value="forefoot">Forefoot</button>
+            </div>
+
+            <div class="lt-title">Body</div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Weight</span><span class="slider-val" id="lt-weight-val">70 kg</span></div>
+                <input type="range" id="lt-weight-slider" min="40" max="120" value="70">
+            </div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Foot Length</span><span class="slider-val" id="lt-length-val">265 mm</span></div>
+                <input type="range" id="lt-length-slider" min="220" max="310" value="265">
+            </div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Foot Width</span><span class="slider-val" id="lt-width-val">100 mm</span></div>
+                <input type="range" id="lt-width-slider" min="80" max="120" value="100">
+            </div>
+
+            <div class="lt-title">Zone Density</div>
+            <div class="zone-bar" id="lt-zone-bar">
+                <div class="zone-seg" id="lt-zb-heel">Heel</div>
+                <div class="zone-seg" id="lt-zb-mid">Mid</div>
+                <div class="zone-seg" id="lt-zb-fore">Fore</div>
+            </div>
+        </div>
+
+        <!-- Center: Canvas -->
+        <div class="lt-viz-wrap">
+            <canvas id="lt-canvas"></canvas>
+            <div class="lt-scale"></div>
+            <div class="lt-scale-labels">
+                <span>HIGH</span><span>MED</span><span>LOW</span>
+            </div>
+        </div>
+
+        <!-- Right: Stats -->
+        <div class="lt-panel">
+            <div class="lt-title">Computed Spec</div>
+            <div class="stat-grid">
+                <div class="stat full"><div class="stat-label">Total Cells</div><div class="stat-val red" id="lt-st-cells">2,400</div></div>
+                <div class="stat"><div class="stat-label">Cell Size</div><div class="stat-val" id="lt-st-size">2.0–4.5</div></div>
+                <div class="stat"><div class="stat-label">Wall</div><div class="stat-val" id="lt-st-wall">0.40–0.80</div></div>
+                <div class="stat"><div class="stat-label">Stiffness</div><div class="stat-val" id="lt-st-stiff">0.80</div></div>
+                <div class="stat"><div class="stat-label">Weight</div><div class="stat-val" id="lt-st-weight">236g</div></div>
+            </div>
+
+            <div class="lt-title">What Density Changes</div>
+            <div class="perf-list">
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Impact Absorption</span><span class="perf-val" id="lt-pv-impact">72</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-impact"></div></div><div class="perf-desc" id="lt-pd-impact"></div></div>
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Energy Return</span><span class="perf-val" id="lt-pv-energy">65</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-energy"></div></div><div class="perf-desc" id="lt-pd-energy"></div></div>
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Flexibility</span><span class="perf-val" id="lt-pv-flex">58</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-flex"></div></div><div class="perf-desc" id="lt-pd-flex"></div></div>
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Stability</span><span class="perf-val" id="lt-pv-stab">70</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-stab"></div></div><div class="perf-desc" id="lt-pd-stab"></div></div>
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Weight</span><span class="perf-val" id="lt-pv-wt">60</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-wt"></div></div><div class="perf-desc" id="lt-pd-wt"></div></div>
+                <div class="perf-item"><div class="perf-header"><span class="perf-name">Durability</span><span class="perf-val" id="lt-pv-dur">68</span></div><div class="perf-bar"><div class="perf-fill" id="lt-pf-dur"></div></div><div class="perf-desc" id="lt-pd-dur"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- API Key Modal -->
+<div class="api-modal" id="api-modal">
+    <div class="api-backdrop"></div>
+    <div class="api-card">
+        <button class="api-close" id="api-close">&times;</button>
+        <div class="api-header">
+            <div class="api-eye">Configuration</div>
+            <div class="api-title">OpenAI API Key</div>
+            <div class="api-desc">Required to generate AI renders. Stored locally in your browser only.</div>
+        </div>
+        <input type="password" class="api-input" id="api-key-input" placeholder="sk-..." autocomplete="off">
+        <button class="btn btn-ac api-submit" id="api-key-submit">Connect.</button>
+    </div>
+</div>
+
+<div id="scanner-mount"></div>
+<script type="module" src="customize.js"></script>
+</body>
+</html>

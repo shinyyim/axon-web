@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXON. — Lattice Density Visualizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=DM+Sans:wght@400;500&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: #FFFFFF; color: #111; min-height: 100vh; }
+
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #fff; border-bottom: 1px solid #E5E5E5;
+}
+.nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; padding: 0 40px; max-width: 1400px; margin: 0 auto;
+}
+.nav-logo { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 3px; text-decoration: none; color: inherit; }
+.nav-logo .dot { color: #E94520; }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a { font-size: 13px; font-weight: 500; letter-spacing: 0.5px; text-decoration: none; color: inherit; transition: opacity .2s; }
+.nav-links a:hover { opacity: .5; }
+.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-cta { display: inline-block; padding: 8px 24px; border-radius: 30px; background: #E94520; color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-decoration: none; transition: opacity .2s; }
+.nav-cta:hover { opacity: .85; }
+
+.page { padding: 72px 40px 40px; max-width: 1400px; margin: 0 auto; }
+
+.hero { text-align: center; margin-bottom: 32px; }
+.hero h1 { font-family: 'Oswald', sans-serif; font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; }
+.hero h1 .dot { color: #E94520; }
+.hero p { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #707070; margin-top: 8px; }
+
+.layout { display: grid; grid-template-columns: 260px 1fr 260px; gap: 32px; }
+.viz-col { display: flex; flex-direction: column; gap: 16px; }
+
+/* Controls */
+.panel { display: flex; flex-direction: column; gap: 20px; }
+.section-title {
+    font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding-bottom: 6px; border-bottom: 1px solid #E5E5E5;
+}
+.sel-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.sel-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    padding: 5px 12px; border-radius: 30px;
+    border: 1px solid #E5E5E5; background: #fff; cursor: pointer;
+    transition: all 0.15s;
+}
+.sel-btn:hover { border-color: #111; }
+.sel-btn.active { background: #111; color: #fff; border-color: #111; }
+
+.slider-row { display: flex; flex-direction: column; gap: 4px; }
+.slider-header { display: flex; justify-content: space-between; }
+.slider-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #707070; text-transform: uppercase; letter-spacing: 1px; }
+.slider-val { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+input[type="range"] { width: 100%; height: 2px; -webkit-appearance: none; background: #E5E5E5; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #111; cursor: pointer; }
+
+/* Stats panel */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat { padding: 12px; background: #F5F5F5; border-radius: 8px; }
+.stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #707070; text-transform: uppercase; letter-spacing: 1px; }
+.stat-val { font-family: 'IBM Plex Mono', monospace; font-size: 18px; margin-top: 2px; }
+.stat-val.red { color: #E94520; }
+.stat.full { grid-column: 1 / -1; }
+
+/* Zone bar */
+.zone-bar { display: flex; gap: 2px; border-radius: 6px; overflow: hidden; height: 28px; }
+.zone-seg {
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: #fff; transition: all 0.4s ease;
+}
+
+/* Canvas */
+.viz-wrap {
+    display: flex; align-items: center; justify-content: center;
+    background: #0A0A0C; border-radius: 16px; overflow: hidden;
+    position: relative; max-height: calc(100vh - 180px);
+}
+#lattice-viz { width: 100%; height: 100%; display: block; }
+
+/* Color scale */
+.color-scale {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    width: 12px; height: 200px; border-radius: 6px;
+    background: linear-gradient(to bottom, #E94520, #FF6B35, #FFB366, #2A2A30);
+}
+.scale-labels {
+    position: absolute; right: 34px; top: 50%; transform: translateY(-50%);
+    height: 200px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.scale-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; }
+
+/* Zone stats compact */
+.zone-stats { display: flex; flex-direction: column; gap: 4px; }
+.zs-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #F5F5F5; border-radius: 6px; }
+.zs-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #707070; text-transform: uppercase; letter-spacing: 1px; }
+.zs-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+.zs-val.red { color: #E94520; }
+
+/* Performance bars */
+.perf-list { display: flex; flex-direction: column; gap: 10px; }
+.perf-item { display: flex; flex-direction: column; gap: 3px; }
+.perf-header { display: flex; justify-content: space-between; align-items: baseline; }
+.perf-name { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #111; text-transform: uppercase; letter-spacing: 0.5px; }
+.perf-val { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #707070; }
+.perf-bar { height: 4px; background: #F0F0F0; border-radius: 2px; overflow: hidden; }
+.perf-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease, background 0.5s ease; }
+.perf-desc { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #999; line-height: 1.3; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="http://localhost:3002/nerve.html">AXON<span class="dot">.</span></a>
+        <ul class="nav-links">
+            <li><a href="http://localhost:3002/nerve.html">Nerve 001</a></li>
+            <li><a href="http://localhost:3003/customize.html">Customize</a></li>
+            <li><a href="http://localhost:3004/lattice.html" style="font-weight:600">Structure</a></li>
+        </ul>
+        <div class="nav-right">
+            <a class="nav-cta" href="#">Book a Scan</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <div class="hero">
+        <h1>Lattice Density<span class="dot">.</span></h1>
+        <p>Adaptive gyroid cell distribution — responding to body signal in real time.</p>
+    </div>
+
+    <div class="layout">
+        <!-- Left controls -->
+        <div class="panel">
+            <div class="section-title">Purpose</div>
+            <div class="sel-row" id="purpose-sel">
+                <button class="sel-btn" data-value="beginner">Beginner</button>
+                <button class="sel-btn active" data-value="training">Training</button>
+                <button class="sel-btn" data-value="longdist">Long Dist</button>
+                <button class="sel-btn" data-value="racing">Racing</button>
+            </div>
+
+            <div class="section-title">Strike Pattern</div>
+            <div class="sel-row" id="strike-sel">
+                <button class="sel-btn active" data-value="heel">Heel</button>
+                <button class="sel-btn" data-value="midfoot">Midfoot</button>
+                <button class="sel-btn" data-value="forefoot">Forefoot</button>
+            </div>
+
+            <div class="section-title">Body</div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Weight</span><span class="slider-val" id="weight-val">70 kg</span></div>
+                <input type="range" id="weight-slider" min="40" max="120" value="70">
+            </div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Foot Length</span><span class="slider-val" id="length-val">265 mm</span></div>
+                <input type="range" id="length-slider" min="220" max="310" value="265">
+            </div>
+            <div class="slider-row">
+                <div class="slider-header"><span class="slider-label">Foot Width</span><span class="slider-val" id="width-val">100 mm</span></div>
+                <input type="range" id="width-slider" min="80" max="120" value="100">
+            </div>
+
+            <div class="section-title">Zone Density</div>
+            <div class="zone-bar" id="zone-bar">
+                <div class="zone-seg" id="zb-heel">Heel</div>
+                <div class="zone-seg" id="zb-mid">Mid</div>
+                <div class="zone-seg" id="zb-fore">Fore</div>
+            </div>
+        </div>
+
+        <!-- Center: Canvas -->
+        <div class="viz-wrap">
+            <canvas id="lattice-viz"></canvas>
+            <div class="color-scale"></div>
+            <div class="scale-labels">
+                <span class="scale-label">HIGH</span>
+                <span class="scale-label">MED</span>
+                <span class="scale-label">LOW</span>
+            </div>
+        </div>
+
+        <!-- Right: Stats -->
+        <div class="panel">
+            <div class="section-title">Computed Spec</div>
+            <div class="stat-grid">
+                <div class="stat full">
+                    <div class="stat-label">Total Cells</div>
+                    <div class="stat-val red" id="st-cells">2,400</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Cell Size</div>
+                    <div class="stat-val" id="st-size">2.0–4.5</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Wall</div>
+                    <div class="stat-val" id="st-wall">0.40–0.80</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Stiffness</div>
+                    <div class="stat-val" id="st-stiff">0.80</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Weight</div>
+                    <div class="stat-val" id="st-weight">236g</div>
+                </div>
+            </div>
+
+            <div class="section-title">What Density Changes</div>
+            <div class="perf-list" id="perf-list">
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Impact Absorption</span><span class="perf-val" id="pv-impact">72</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-impact"></div></div>
+                    <div class="perf-desc" id="pd-impact">Denser cells at heel absorb more landing force</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Energy Return</span><span class="perf-val" id="pv-energy">65</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-energy"></div></div>
+                    <div class="perf-desc" id="pd-energy">Smaller, stiffer cells store and release energy</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Flexibility</span><span class="perf-val" id="pv-flex">58</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-flex"></div></div>
+                    <div class="perf-desc" id="pd-flex">Larger cells allow more sole flex at toe-off</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Stability</span><span class="perf-val" id="pv-stab">70</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-stab"></div></div>
+                    <div class="perf-desc" id="pd-stab">Thick walls and dense midfoot prevent roll</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Weight</span><span class="perf-val" id="pv-wt">60</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-wt"></div></div>
+                    <div class="perf-desc" id="pd-wt">Fewer, larger cells = lighter shoe</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-header"><span class="perf-name">Durability</span><span class="perf-val" id="pv-dur">68</span></div>
+                    <div class="perf-bar"><div class="perf-fill" id="pf-dur"></div></div>
+                    <div class="perf-desc" id="pd-dur">Thicker walls resist material fatigue</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('lattice-viz');
+const ctx = canvas.getContext('2d');
+
+let state = { purpose: 'training', strike: 'heel', weight: 70, footLength: 265, footWidth: 100 };
+let anim = { heel: 1.4, mid: 1.0, fore: 0.8, cells: 2400, wt: 1.0 };
+
+function compute() {
+    const pc = { beginner: 1800, training: 2400, longdist: 2800, racing: 3200 };
+    const lf = state.footLength / 265, wf = state.footWidth / 100, wt = state.weight / 70;
+    // Weight affects cell count: heavier = more cells for support
+    const cells = Math.round((pc[state.purpose] || 2400) * lf * wf * (0.6 + wt * 0.4));
+    const ca = { beginner: 0.4, training: 0, longdist: -0.3, racing: -0.6 }[state.purpose] || 0;
+    const wa = { beginner: -0.05, training: 0, longdist: 0.03, racing: 0.08 }[state.purpose] || 0;
+    const cellMin = +(2.0 + (1 - wt) * 0.8 + ca).toFixed(1);
+    const cellMax = +(4.5 + (1 - wt) * 1.0 + ca).toFixed(1);
+    const wallMin = +(0.4 + wt * 0.15 + wa).toFixed(2);
+    const wallMax = +(0.8 + wt * 0.2 + wa).toFixed(2);
+    const stiff = +(({ beginner: 0.6, training: 0.8, longdist: 0.9, racing: 1.1 }[state.purpose] || 0.8) * wt).toFixed(2);
+    const weight = Math.round(180 + (cells / 100) * 2 + state.weight * 0.8);
+    const zd = {
+        heel:     { heel: 1.4, mid: 1.0, fore: 0.8 },
+        midfoot:  { heel: 1.0, mid: 1.3, fore: 1.0 },
+        forefoot: { heel: 0.7, mid: 1.0, fore: 1.5 }
+    }[state.strike] || { heel: 1.4, mid: 1.0, fore: 0.8 };
+    return { cells, cellMin, cellMax, wallMin, wallMax, stiff, weight, zd, wt };
+}
+
+// Realistic left foot sole outline
+function footOutline(cx, cy, fw, fh) {
+    const p = [];
+    // Right foot sole (bottom view) - anatomically shaped
+    const outline = [
+        // Toes (top)
+        [0.42, 0.00], [0.52, 0.01], [0.60, 0.03], [0.65, 0.06],
+        [0.62, 0.08], [0.68, 0.09], [0.63, 0.12],
+        // Big toe
+        [0.30, 0.02], [0.22, 0.04], [0.18, 0.08],
+        // Outer edge (right side going down)
+        [0.68, 0.14], [0.72, 0.18], [0.74, 0.24], [0.73, 0.30],
+        [0.70, 0.38], [0.66, 0.46], [0.62, 0.54],
+        // Heel
+        [0.60, 0.62], [0.60, 0.70], [0.62, 0.78],
+        [0.62, 0.85], [0.60, 0.90], [0.56, 0.95],
+        [0.50, 0.98], [0.42, 1.00], [0.34, 0.98],
+        [0.28, 0.95], [0.24, 0.90], [0.22, 0.85],
+        // Inner edge (left side going up) — arch
+        [0.22, 0.78], [0.24, 0.70], [0.28, 0.62],
+        [0.34, 0.52], [0.38, 0.44], [0.36, 0.36],
+        [0.30, 0.28], [0.24, 0.22], [0.20, 0.16],
+        [0.18, 0.12], [0.20, 0.08], [0.26, 0.04],
+        [0.34, 0.01], [0.42, 0.00]
+    ];
+    outline.forEach(([x, y]) => {
+        p.push({ x: cx + (x - 0.45) * fw, y: cy - fh / 2 + y * fh });
+    });
+    return p;
+}
+
+function smoothPath(ctx, pts) {
+    if (pts.length < 3) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+        const cp1x = (pts[i].x + pts[(i + 1) % pts.length].x) / 2;
+        const cp1y = (pts[i].y + pts[(i + 1) % pts.length].y) / 2;
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, cp1x, cp1y);
+    }
+    ctx.closePath();
+}
+
+function isInside(px, py, pts) {
+    let inside = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        const xi = pts[i].x, yi = pts[i].y, xj = pts[j].x, yj = pts[j].y;
+        if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+}
+
+function densityColor(d) {
+    // d: 0.7 to 1.5 → cold to hot
+    const t = Math.max(0, Math.min(1, (d - 0.7) / 0.8));
+    if (t > 0.65) {
+        // Hot: signal red-orange
+        const r = 233, g = Math.round(69 + (1 - t) * 100), b = Math.round(32 + (1 - t) * 40);
+        return { r, g, b, a: 0.6 + t * 0.4 };
+    } else if (t > 0.3) {
+        // Warm: orange
+        const r = Math.round(180 + t * 60), g = Math.round(100 + t * 60), b = Math.round(40 + t * 20);
+        return { r, g, b, a: 0.4 + t * 0.4 };
+    } else {
+        // Cool: dark blue-grey
+        const r = Math.round(42 + t * 60), g = Math.round(42 + t * 60), b = Math.round(48 + t * 80);
+        return { r, g, b, a: 0.3 + t * 0.3 };
+    }
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function draw() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(dpr, dpr);
+    const W = rect.width, H = rect.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const data = compute();
+
+    // Animate
+    anim.heel = lerp(anim.heel, data.zd.heel, 0.07);
+    anim.mid = lerp(anim.mid, data.zd.mid, 0.07);
+    anim.fore = lerp(anim.fore, data.zd.fore, 0.07);
+    anim.cells = lerp(anim.cells, data.cells, 0.05);
+    anim.wt = lerp(anim.wt, data.wt, 0.07);
+
+    // Foot
+    const fw = W * 0.48;
+    const fh = Math.min(H * 0.88, fw * 2.4);
+    const cx = W / 2 - 20;
+    const cy = H / 2;
+    const pts = footOutline(cx, cy, fw, fh);
+
+    // Glow background
+    const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, fh * 0.6);
+    grd.addColorStop(0, 'rgba(233, 69, 32, 0.03)');
+    grd.addColorStop(1, 'rgba(10, 10, 12, 0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Foot outline glow
+    smoothPath(ctx, pts);
+    ctx.strokeStyle = 'rgba(233, 69, 32, 0.15)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    smoothPath(ctx, pts);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Heatmap + cells
+    const topY = cy - fh / 2;
+    const botY = cy + fh / 2;
+
+    // Cell grid
+    const cellCount = Math.round(anim.cells);
+    const aspect = fw / fh;
+    const cols = Math.round(Math.sqrt(cellCount * aspect));
+    const rows = Math.round(cellCount / cols);
+    const sx = fw / cols;
+    const sy = fh / rows;
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const px = (cx - fw / 2) + c * sx + (r % 2 ? sx * 0.5 : 0) + sx / 2;
+            const py = topY + r * sy + sy / 2;
+
+            if (!isInside(px, py, pts)) continue;
+
+            // Zone: 0=forefoot(top), 1=heel(bottom)
+            const t = (py - topY) / fh;
+            let density;
+            if (t < 0.35) {
+                density = lerp(anim.fore, anim.mid, t / 0.35);
+            } else if (t < 0.65) {
+                density = lerp(anim.mid, anim.mid, (t - 0.35) / 0.3);
+            } else {
+                density = lerp(anim.mid, anim.heel, (t - 0.65) / 0.35);
+            }
+
+            // Weight: 0.57 (40kg) → 1.71 (120kg), normalize to 0–1
+            const wNorm = (anim.wt - 0.57) / (1.71 - 0.57); // 0=light, 1=heavy
+            const effectiveDensity = density + wNorm * 0.4;
+            const col = densityColor(effectiveDensity);
+            const baseR = sx * 0.38;
+            // Heavy = much smaller cells, light = much larger
+            const cellR = baseR * (2.2 - wNorm * 1.2 - density * 0.3);
+
+            // Hexagonal cell
+            ctx.beginPath();
+            for (let s = 0; s <= 6; s++) {
+                const angle = (s / 6) * Math.PI * 2 - Math.PI / 6;
+                const hx = px + Math.cos(angle) * cellR;
+                const hy = py + Math.sin(angle) * cellR;
+                if (s === 0) ctx.moveTo(hx, hy); else ctx.lineTo(hx, hy);
+            }
+            ctx.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a})`;
+            ctx.fill();
+            // Heavy = thick walls, light = thin walls
+            ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a * 0.8})`;
+            ctx.lineWidth = 0.3 + wNorm * 1.5 + density * 0.3;
+            ctx.stroke();
+        }
+    }
+
+    // Zone labels
+    ctx.font = '500 11px "IBM Plex Mono"';
+    ctx.textAlign = 'left';
+    const labelX = cx + fw / 2 + 20;
+    const zones = [
+        { label: 'FOREFOOT', y: topY + fh * 0.15, d: anim.fore },
+        { label: 'MIDFOOT', y: topY + fh * 0.5, d: anim.mid },
+        { label: 'HEEL', y: topY + fh * 0.85, d: anim.heel }
+    ];
+    zones.forEach(z => {
+        const isMax = z.d >= Math.max(anim.heel, anim.mid, anim.fore) - 0.05;
+        ctx.fillStyle = isMax ? '#E94520' : 'rgba(255,255,255,0.3)';
+        ctx.fillText(z.label, labelX, z.y - 4);
+        ctx.font = '400 18px "IBM Plex Mono"';
+        ctx.fillText(z.d.toFixed(2) + 'x', labelX, z.y + 16);
+        ctx.font = '500 11px "IBM Plex Mono"';
+
+        // Line connecting to foot
+        ctx.beginPath();
+        ctx.moveTo(labelX - 4, z.y + 4);
+        ctx.lineTo(cx + fw / 2 + 4, z.y + 4);
+        ctx.strokeStyle = isMax ? 'rgba(233,69,32,0.3)' : 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // Stats
+    document.getElementById('st-cells').textContent = Math.round(anim.cells).toLocaleString();
+    document.getElementById('st-size').textContent = `${data.cellMin}–${data.cellMax}`;
+    document.getElementById('st-wall').textContent = `${data.wallMin}–${data.wallMax}`;
+    document.getElementById('st-stiff').textContent = data.stiff;
+    document.getElementById('st-weight').textContent = data.weight + 'g';
+
+    // Zone stats
+    const maxD = Math.max(anim.heel, anim.mid, anim.fore);
+    const heelEl = document.getElementById('st-heel-d');
+    const midEl = document.getElementById('st-mid-d');
+    const foreEl = document.getElementById('st-fore-d');
+    if (heelEl) { heelEl.textContent = anim.heel.toFixed(2) + 'x'; heelEl.className = 'zs-val' + (anim.heel >= maxD - 0.05 ? ' red' : ''); }
+    if (midEl) { midEl.textContent = anim.mid.toFixed(2) + 'x'; midEl.className = 'zs-val' + (anim.mid >= maxD - 0.05 ? ' red' : ''); }
+    if (foreEl) { foreEl.textContent = anim.fore.toFixed(2) + 'x'; foreEl.className = 'zs-val' + (anim.fore >= maxD - 0.05 ? ' red' : ''); }
+
+    // Performance metrics based on cell density
+    const avgDensity = (anim.heel + anim.mid + anim.fore) / 3;
+    const wNormP = (anim.wt - 0.57) / (1.71 - 0.57);
+    const cellsNorm = (anim.cells - 1000) / (4500 - 1000); // 0-1
+    const perf = {
+        impact:  Math.round(Math.min(100, anim.heel * 40 + wNormP * 25 + cellsNorm * 15)),
+        energy:  Math.round(Math.min(100, cellsNorm * 50 + anim.fore * 20 + wNormP * 10)),
+        flex:    Math.round(Math.min(100, (1.5 - avgDensity) * 60 + (1 - wNormP) * 30 + 20)),
+        stab:    Math.round(Math.min(100, anim.mid * 35 + wNormP * 30 + cellsNorm * 15)),
+        wt:      Math.round(Math.min(100, (1 - cellsNorm) * 55 + (1 - wNormP) * 35 + 10)),
+        dur:     Math.round(Math.min(100, wNormP * 40 + avgDensity * 25 + cellsNorm * 20))
+    };
+    const perfDescs = {
+        impact: anim.heel > 1.2 ? 'Dense heel cells absorb heavy landing force' : anim.fore > 1.2 ? 'Forefoot density cushions toe strikes' : 'Balanced absorption across sole',
+        energy: cellsNorm > 0.6 ? 'Thousands of micro-cells maximize spring effect' : wNormP > 0.6 ? 'Thick walls store elastic energy under load' : 'Moderate cell count balances return and comfort',
+        flex: avgDensity < 1.0 ? 'Large sparse cells bend easily at toe-off' : wNormP > 0.6 ? 'Dense structure limits flex for stability' : 'Moderate flex through midfoot transition',
+        stab: anim.mid > 1.2 ? 'Dense midfoot prevents lateral roll' : wNormP > 0.6 ? 'Heavy-duty walls resist deformation' : 'Natural stability from balanced density',
+        wt: cellsNorm < 0.3 ? 'Fewer cells = ultra-light construction' : cellsNorm > 0.7 ? 'High cell count adds material weight' : 'Balanced cell count for moderate weight',
+        dur: wNormP > 0.6 ? 'Thick walls resist compression fatigue' : avgDensity > 1.2 ? 'Dense packing distributes stress evenly' : 'Standard durability for regular use'
+    };
+    ['impact', 'energy', 'flex', 'stab', 'wt', 'dur'].forEach(k => {
+        const v = perf[k];
+        const bar = document.getElementById('pf-' + k);
+        const val = document.getElementById('pv-' + k);
+        const desc = document.getElementById('pd-' + k);
+        if (bar) {
+            bar.style.width = v + '%';
+            bar.style.background = v >= 75 ? '#E94520' : v >= 50 ? '#111' : '#999';
+        }
+        if (val) val.textContent = v;
+        if (desc) desc.textContent = perfDescs[k];
+    });
+
+    // Zone bar
+    const zh = document.getElementById('zb-heel'), zm = document.getElementById('zb-mid'), zf = document.getElementById('zb-fore');
+    zh.style.flex = anim.heel; zm.style.flex = anim.mid; zf.style.flex = anim.fore;
+    zh.textContent = `Heel ${anim.heel.toFixed(1)}x`; zm.textContent = `Mid ${anim.mid.toFixed(1)}x`; zf.textContent = `Fore ${anim.fore.toFixed(1)}x`;
+    zh.style.background = anim.heel >= maxD - 0.05 ? '#E94520' : '#2A2A30';
+    zm.style.background = anim.mid >= maxD - 0.05 ? '#E94520' : '#2A2A30';
+    zf.style.background = anim.fore >= maxD - 0.05 ? '#E94520' : '#2A2A30';
+
+    requestAnimationFrame(draw);
+}
+
+// Bind
+function bindSel(id, key) {
+    document.getElementById(id).querySelectorAll('.sel-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById(id).querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state[key] = btn.dataset.value;
+        });
+    });
+}
+function bindSlider(id, vid, key, u) {
+    const s = document.getElementById(id), v = document.getElementById(vid);
+    s.addEventListener('input', () => { state[key] = +s.value; v.textContent = s.value + ' ' + u; });
+}
+bindSel('purpose-sel', 'purpose');
+bindSel('strike-sel', 'strike');
+bindSlider('weight-slider', 'weight-val', 'weight', 'kg');
+bindSlider('length-slider', 'length-val', 'footLength', 'mm');
+bindSlider('width-slider', 'width-val', 'footWidth', 'mm');
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

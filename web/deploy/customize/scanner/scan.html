@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AXON. — Foot Scanner</title>
+    <meta name="description" content="Scan your foot. Trust the signal.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="scan.css">
+</head>
+<body>
+
+<div class="scanner-app">
+
+    <!-- Connecting screen (shown until peer connects or camera ready) -->
+    <div class="sc-connecting" id="connecting-screen">
+        <div class="sc-connecting-ring"></div>
+        <div class="sc-connecting-text">Connecting to AXON.</div>
+    </div>
+
+    <!-- Top bar -->
+    <div class="sc-top">
+        <div class="sc-logo">AXON<span class="dot">.</span> SCAN</div>
+        <div class="sc-session" id="session-id"></div>
+    </div>
+
+    <!-- Camera viewport -->
+    <div class="sc-viewport">
+        <video class="sc-video" id="camera-feed" autoplay playsinline muted></video>
+        <div class="sc-overlay">
+            <div class="sc-vignette"></div>
+            <div class="sc-guide" id="a4-guide">
+                <div class="sc-corner tl"></div>
+                <div class="sc-corner tr"></div>
+                <div class="sc-corner bl"></div>
+                <div class="sc-corner br"></div>
+                <div class="sc-guide-label" id="guide-label">Place A4 paper</div>
+            </div>
+        </div>
+        <canvas class="sc-process-canvas" id="process-canvas"></canvas>
+
+        <!-- Processing overlay -->
+        <div class="sc-processing" id="processing-screen">
+            <div class="sc-ring"></div>
+            <div class="sc-processing-text">Analyzing signal...</div>
+            <div class="sc-processing-sub">Measuring geometry</div>
+        </div>
+
+        <!-- Results screen -->
+        <div class="sc-results" id="results-screen">
+            <div class="sc-results-title">Signal Captured<span class="dot">.</span></div>
+            <div class="sc-data" id="results-data"></div>
+            <button class="sc-send" id="send-btn">Send to AXON.</button>
+            <button class="sc-rescan" id="rescan-btn">Scan again</button>
+        </div>
+
+        <!-- Sent confirmation -->
+        <div class="sc-sent" id="sent-screen">
+            <div class="sc-sent-check">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="sc-sent-text">Signal transmitted.</div>
+            <div class="sc-sent-sub">Check your desktop</div>
+        </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="sc-status" id="status-bar">
+        <div class="sc-status-dot" id="status-dot"></div>
+        <div class="sc-status-text" id="status-text">Initializing camera...</div>
+    </div>
+
+    <!-- Capture button -->
+    <div class="sc-controls">
+        <button class="sc-capture" id="capture-btn" disabled></button>
+    </div>
+
+    <!-- Error toast -->
+    <div class="sc-error" id="error-toast"></div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="scan.js"></script>
+</body>
+</html>

@@ -772,16 +772,16 @@ function buildFallbackPrompt(spec) {
 }
 
 async function getRandomRefImage(purpose) {
-    const purposeMap = { beginner: 'beginner', training: 'training', longdist: 'longdist', racing: 'racing' };
-    const folder = purposeMap[purpose] || 'training';
+    const refMap = {
+        beginner: ['ax-nv01-0960_2026-02-27T04-45-03.png'],
+        training: ['Gemini_Generated_Image_cflb2gcflb2gcflb.png'],
+        longdist: ['Gemini_Generated_Image_94esm494esm494es.png'],
+        racing: ['cf4d9a0ed3b17183186383eafca5bd87.jpg']
+    };
+    const folder = purpose || 'training';
+    const files = refMap[folder] || refMap.training;
+    const pick = files[Math.floor(Math.random() * files.length)];
     try {
-        const resp = await fetch(`/list-refs/${folder}`);
-        if (!resp.ok) return null;
-        const data = await resp.json();
-        const files = data.files || [];
-        if (files.length === 0) return null;
-        const pick = files[Math.floor(Math.random() * files.length)];
-        // Fetch image as blob then convert to File
         const imgResp = await fetch(`reference_shoes/${folder}/${pick}`);
         if (!imgResp.ok) return null;
         const blob = await imgResp.blob();

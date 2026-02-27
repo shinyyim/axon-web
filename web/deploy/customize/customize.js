@@ -735,16 +735,7 @@ function buildPrompt(spec) {
     const mutation = mutations[Math.floor(Math.random() * mutations.length)];
     const purpose = p.load.activityType;
 
-    // Long distance: preserve reference sole cell/mesh structure exactly
-    if (purpose === 'longdist') {
-        const weightFactor = p.load.bodyWeight / 70;
-        const cellSizeNote = weightFactor > 1.1 ? 'Make cells slightly smaller and denser for heavier load.' :
-            weightFactor < 0.9 ? 'Make cells slightly larger and more open for lighter load.' :
-            'Keep cell size as shown in the reference.';
-        return `CRITICAL: Keep the midsole lattice cell structure and mesh pattern from this reference image EXACTLY as-is — preserve the solid sections, the open mesh geometry, the cell shape, and the visible 3D-printed lattice architecture. Do NOT change the sole structure. ${cellSizeNote} You may redesign the UPPER portion only: change the silhouette, knit pattern, collar shape, or surface details. IMPORTANT COLOR: The shoe has a smooth natural ombré gradient — ${colorDesc}. The gradient must flow seamlessly from bottom to top with no hard edges. Specs: ${style}, ${upperDesc}${carbonDesc}. ${detail} Clean white studio background, soft diffused product photography lighting. ${angle}. No logos, no text, no brand marks, no neon glow.`;
-    }
-
-    return `Use this shoe as STYLE INSPIRATION — study its sculptural language and structural philosophy. REDESIGN a new original shoe that shares the same design DNA but is clearly a different product. ${mutation} IMPORTANT COLOR: The shoe has a smooth natural ombré gradient — ${colorDesc}. The gradient must flow seamlessly from bottom to top with no hard edges. Specs: ${style}, ${latticeDesc}, ${upperDesc}${carbonDesc}. ${detail} Clean white studio background, soft diffused product photography lighting. ${angle}. No logos, no text, no brand marks, no neon glow.`;
+    return `CRITICAL: This reference image is the BASE DESIGN. Keep the overall silhouette, sole structure, lattice/mesh geometry, and proportions as close to the reference as possible. Preserve the 3D-printed lattice architecture, cell patterns, structural ribs, and midsole shape. You are creating a VARIANT of this exact shoe — not a new design. Only apply these modifications: ${mutation} IMPORTANT COLOR: Apply a smooth natural ombré gradient — ${colorDesc}. The gradient must flow seamlessly from bottom to top with no hard edges. Adapt the shoe for: ${style}. Technical specs: ${latticeDesc}, ${upperDesc}${carbonDesc}. ${detail} Clean white studio background, soft diffused product photography lighting. ${angle}. No logos, no text, no brand marks, no neon glow. Photorealistic product shot.`;
 }
 
 function buildFallbackPrompt(spec) {

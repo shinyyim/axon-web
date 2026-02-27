@@ -271,7 +271,7 @@ export class ShoeViewer {
             racing: 'models/racing_light.obj',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/Meshy_AI_Midnight_Mesh_Runner_0227040330_generate.obj'
+            _default: 'models/racing_light.obj'
         };
         const objFile = objMap[purpose] || objMap._default;
 
@@ -416,7 +416,7 @@ export class ShoeViewer {
             racing: 'models/racing_light.obj',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/Meshy_AI_Midnight_Mesh_Runner_0227040330_generate.obj'
+            _default: 'models/racing_light.obj'
         };
         const needed = objMap[purpose] || objMap._default;
         if (this._currentOBJ !== needed) {

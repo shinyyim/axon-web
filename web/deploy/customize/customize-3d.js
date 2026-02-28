@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const SIGNAL = new THREE.Color(0xE94520);
 const BONE   = new THREE.Color(0xE8E0D4);
@@ -267,17 +268,17 @@ export class ShoeViewer {
     }
 
     _loadOBJ(purpose) {
-        const objMap = {
-            racing: 'models/racing_light.obj',
+        const modelMap = {
+            racing: 'models/racing_light.glb',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/racing_light.obj'
+            _default: 'models/racing_light.glb'
         };
-        const objFile = objMap[purpose] || objMap._default;
+        const modelFile = modelMap[purpose] || modelMap._default;
 
         // Skip if same model already loaded
-        if (this._currentOBJ === objFile && this._modelLoaded) return;
-        this._currentOBJ = objFile;
+        if (this._currentOBJ === modelFile && this._modelLoaded) return;
+        this._currentOBJ = modelFile;
         this._modelLoaded = false;
 
         // Clear existing model
@@ -291,11 +292,13 @@ export class ShoeViewer {
         this.container.style.position = 'relative';
         this.container.appendChild(this._statusEl);
 
-        const loader = new OBJLoader();
-        console.log('ShoeViewer: loading', objFile);
+        const isGLB = modelFile.endsWith('.glb');
+        const loader = isGLB ? new GLTFLoader() : new OBJLoader();
+        console.log('ShoeViewer: loading', modelFile);
         loader.load(
-            objFile,
-            (obj) => {
+            modelFile,
+            (result) => {
+                const obj = isGLB ? result.scene : result;
                 try {
                     // Center and normalize
                     const box = new THREE.Box3().setFromObject(obj);
@@ -411,14 +414,14 @@ export class ShoeViewer {
         this.currentSpec = spec;
         const purpose = spec.profile?.load?.activityType || 'training';
 
-        // If purpose changed, reload the correct OBJ
-        const objMap = {
-            racing: 'models/racing_light.obj',
+        // If purpose changed, reload the correct model
+        const modelMap = {
+            racing: 'models/racing_light.glb',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/racing_light.obj'
+            _default: 'models/racing_light.glb'
         };
-        const needed = objMap[purpose] || objMap._default;
+        const needed = modelMap[purpose] || modelMap._default;
         if (this._currentOBJ !== needed) {
             this._pendingSpec = spec;
             this._loadOBJ(purpose);

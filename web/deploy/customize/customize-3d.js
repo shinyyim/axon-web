@@ -8,6 +8,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const SIGNAL = new THREE.Color(0xE94520);
 const BONE   = new THREE.Color(0xE8E0D4);
@@ -272,7 +273,8 @@ export class ShoeViewer {
             racing: 'models/racing_light.glb',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/racing_light.glb'
+            training: 'models/training_light_draco.glb',
+            _default: 'models/training_light_draco.glb'
         };
         const modelFile = modelMap[purpose] || modelMap._default;
 
@@ -293,7 +295,15 @@ export class ShoeViewer {
         this.container.appendChild(this._statusEl);
 
         const isGLB = modelFile.endsWith('.glb');
-        const loader = isGLB ? new GLTFLoader() : new OBJLoader();
+        let loader;
+        if (isGLB) {
+            loader = new GLTFLoader();
+            const dracoLoader = new DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+            loader.setDRACOLoader(dracoLoader);
+        } else {
+            loader = new OBJLoader();
+        }
         console.log('ShoeViewer: loading', modelFile);
         loader.load(
             modelFile,
@@ -419,7 +429,8 @@ export class ShoeViewer {
             racing: 'models/racing_light.glb',
             longdist: 'models/longdist_light.obj',
             beginner: 'models/beginner_light.obj',
-            _default: 'models/racing_light.glb'
+            training: 'models/training_light_draco.glb',
+            _default: 'models/training_light_draco.glb'
         };
         const needed = modelMap[purpose] || modelMap._default;
         if (this._currentOBJ !== needed) {

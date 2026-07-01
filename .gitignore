@@ -1,1 +1,23 @@
+# macOS
+.DS_Store
+
+# Blender auto-backups
+*.blend1
+*.blend2
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Env / secrets
+.env
+.env.local
+
+# Large / generated 3D assets
 web/deploy/customize/models/Meshy_AI_Midnight_Mesh_Runner_0227040330_generate.obj
+web/deploy/customize/generated/

@@ -1,10 +1,63 @@
 # AXON.
 
-**Future your Performance.**
+> **Future your Performance.**
+
+[![Live Demo](https://img.shields.io/badge/Live-axon--web--beta.vercel.app-E94520?style=for-the-badge)](https://axon-web-beta.vercel.app)
+&nbsp;
+![Three.js](https://img.shields.io/badge/Three.js-3D%20configurator-0A0A0C?style=for-the-badge)
+![Supabase](https://img.shields.io/badge/Supabase-backend-3ECF8E?style=for-the-badge)
+![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code%20agents-8A63D2?style=for-the-badge)
 
 AXON. is an AI-driven future apparel laboratory — a brand that engineers clothing, footwear, and accessories from **biodata** at the threshold of departure. Every garment begins with the body's own signal (movement, force, cadence, breath), captured and translated into engineered structure through AI. Not costume — the real thing: the first apparel you pack for the Moon, the first shoes that touch Mars.
 
-This repository is the **complete brand build** — strategy, product system, commercial film, flagship spatial design, and the live web platform — produced through a multi-agent Claude Code workflow.
+This repository is the **complete brand build** — strategy, product system, commercial film, flagship spatial design, and a live web platform — produced end to end by a team of specialized **Claude Code agents**.
+
+---
+
+## ▸ Live
+
+**→ [axon-web-beta.vercel.app](https://axon-web-beta.vercel.app)** — deployed on Vercel.
+
+The landing site, the DEPARTURE 001 collection, interactive flagship studies (floorplan + lattice structure), and the Nerve 001 product experience — all in the Void + Light design language.
+
+## ▸ Nerve 001 Customizer — the interactive centerpiece
+
+A **Three.js 3D configurator that generates footwear from biodata.** You feed in the body's signal and the shoe is engineered in real time in the browser.
+
+- **Three.js** — real-time 3D configurator in the browser
+- **Supabase** — backend for reference shoes and saved configurations
+- **Python dev server** (`server.py`) — serves the app and exposes endpoints to list reference shoes, **save generated images**, and proxy image generation
+
+```bash
+# Run the customizer locally
+cd web/deploy/customize
+python3 server.py
+# open http://localhost:8000/customize.html
+# (configure Supabase in customize/supabase-config.js)
+```
+
+```bash
+# Serve the main site
+cd web/deploy
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+
+## ▸ Built by 7 specialized Claude Code agents
+
+AXON. is produced by a team of agents, **each owning exactly one folder** and reading the shared brand guardrails in [`CLAUDE.md`](CLAUDE.md) before working. Invoke them as slash commands:
+
+| Command | Team | Owns |
+|---|---|---|
+| `/team-leader` | Team Leader | Oversight, workflow, brand QA |
+| `/brand-strategy` | Brand Strategy | [`brand/`](brand/) |
+| `/product-design` | Product Design | [`product/`](product/) |
+| `/ux-design` | UX Design | [`ux/`](ux/) |
+| `/commercial-film` | Commercial Film | [`film/`](film/) |
+| `/spatial-design` | Spatial Design | [`spatial/`](spatial/) |
+| `/web-platform` | Web Platform | [`web/`](web/) |
+
+**Ground rules:** each team writes only to its own folder; root files (`CLAUDE.md`, `brand_brief.md`) are read-only guardrails; all output is in English. Supporting tools live in `.claude/tools/` (`launch-agents.sh`, image + screenshot scrapers); [`LAUNCH_PROMPT.md`](LAUNCH_PROMPT.md) kicks off a fresh build session. A live [`dashboard.html`](dashboard.html) shows agent-team status, fed by `dashboard_feed.json`.
 
 ---
 
@@ -20,7 +73,15 @@ This repository is the **complete brand build** — strategy, product system, co
 **Design tokens** live in [`brand/color_system.css`](brand/color_system.css).
 Type: Monument Extended (display) · Neue Montreal (body) · Söhne Mono (technical).
 
----
+## Product Naming System
+
+Products are organized into engineering tiers (see [`brand/naming_system.md`](brand/naming_system.md)):
+
+- **PROTOCOL** — foundational engineered basics; texture from aggregated anonymized biodata
+- **TRANSIT** — performance shells; the architecture between body and environment
+- **SIGNAL** — fully biodata-engineered, departure-grade pieces
+
+The first collection — **DEPARTURE 001** — is seven pieces mapped across all three tiers.
 
 ## Repository Structure
 
@@ -37,67 +98,6 @@ Type: Monument Extended (display) · Neue Montreal (body) · Söhne Mono (techni
 | [`web/`](web/) | Brand website (`index.html`, `style.css`, `script.js`) + `web/deploy/` production build |
 | [`dashboard.html`](dashboard.html) | Live agent-team status dashboard (fed by `dashboard_feed.json`) |
 | [`.claude/`](.claude/) | Slash-command agent definitions + scraping/launch tooling |
-
----
-
-## The Web Platform (`web/deploy/`)
-
-The deployable site, including interactive experiences:
-
-- **`index.html`** — Landing page
-- **`nerve001/`** — Nerve 001 product experience
-- **`floorplan/`**, **`structure/`** — Interactive flagship floorplan + lattice structure studies
-- **`customize/`** — **Nerve 001 customizer**: a Three.js 3D configurator that generates footwear from biodata, backed by Supabase and a local Python dev server with an image-generation save endpoint.
-
-### Run the customizer locally
-
-```bash
-cd web/deploy/customize
-python3 server.py
-# open http://localhost:8000/customize.html
-```
-
-`server.py` serves the app and exposes endpoints for listing reference shoes, saving generated images, and proxying image generation. Configure Supabase in `customize/supabase-config.js`.
-
-### Serve the main site
-
-```bash
-cd web/deploy
-python3 -m http.server 8000
-# open http://localhost:8000
-```
-
----
-
-## Multi-Agent Workflow
-
-AXON. is built by a team of specialized Claude Code agents, each owning one folder and reading the shared brand guardrails in `CLAUDE.md` before working. Invoke them as slash commands:
-
-| Command | Team | Owns |
-|---|---|---|
-| `/team-leader` | Team Leader | Oversight, workflow, brand QA |
-| `/brand-strategy` | Brand Strategy | `brand/` |
-| `/product-design` | Product Design | `product/` |
-| `/ux-design` | UX Design | `ux/` |
-| `/commercial-film` | Commercial Film | `film/` |
-| `/spatial-design` | Spatial Design | `spatial/` |
-| `/web-platform` | Web Platform | `web/` |
-
-Supporting tools live in `.claude/tools/` (`launch-agents.sh`, image + screenshot scrapers). [`LAUNCH_PROMPT.md`](LAUNCH_PROMPT.md) is the kickoff prompt for a fresh build session.
-
-**Ground rules:** each team writes only to its own folder; root files (`CLAUDE.md`, `brand_brief.md`) are read-only; all file output is in English; `.md` files are living foundations, not ceilings.
-
----
-
-## Product Naming System
-
-Products are organized into engineering tiers (see [`brand/naming_system.md`](brand/naming_system.md)):
-
-- **PROTOCOL** — foundational engineered basics; texture from aggregated anonymized biodata
-- **TRANSIT** — performance shells; the architecture between body and environment
-- **SIGNAL** — fully biodata-engineered, departure-grade pieces
-
-The first collection — **DEPARTURE 001** — is seven pieces mapped across all three tiers.
 
 ---
 
